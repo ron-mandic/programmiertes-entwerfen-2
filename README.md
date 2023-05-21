@@ -1,2 +1,3 @@
-# programmiertes-entwerfen-2
+# Programmiertes Entwerfen II
+
 Projekt für eine Infografik im Web
