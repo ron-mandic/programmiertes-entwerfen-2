@@ -1,7 +1,7 @@
-import $ from "jquery";
-import { MESSAGE } from "./ts/constants";
+import { chart } from './ts/variables';
 
-console.log(MESSAGE);
+async function main() {
+  chart.init();
+}
 
-const app = $("#app");
-console.log(app);
+main();

@@ -9,6 +9,7 @@
 		"preview": "vite preview"
 	},
 	"devDependencies": {
+		"@types/chroma-js": "^2.4.0",
 		"@types/jquery": "^3.5.16",
 		"@types/node": "^20.2.1",
 		"sass": "^1.62.1",
@@ -16,6 +17,8 @@
 		"vite": "^4.3.2"
 	},
 	"dependencies": {
+		"axios": "^1.4.0",
+		"chroma-js": "^2.4.2",
 		"jquery": "^3.7.0"
 	}
 }
