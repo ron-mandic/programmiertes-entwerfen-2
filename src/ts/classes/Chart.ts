@@ -1,16 +1,16 @@
-import { log } from 'console';
-import { TChartData, TChartOptions } from '../types';
 import Http from 'axios';
+import { Columns } from '../constants';
+import { Match } from './Match';
 
 export class Chart {
   public years: number[];
   public columns: string[];
-  public data: TChartData[];
+  public data: any[];
 
   public year: number | null = null;
 
   // Constructor ########################################
-  constructor(options: TChartOptions) {
+  constructor(options: any) {
     this.years = options.years;
     this.columns = options.columns;
 
@@ -48,6 +48,12 @@ export class Chart {
   }
 
   async render() {
-    console.log(this.data, 'render');
+    console.log(Match.goalsOf(this.data, 1930, 10, Columns.HOME_GOALS));
+    console.log(Match.goalsOf(this.data, 1930, 10, Columns.HOME_GOALS_OWN));
+    console.log(Match.goalsOf(this.data, 1930, 10, Columns.HOME_GOALS_PENALTY));
+
+    console.log(Match.goalsOf(this.data, 1930, 10, Columns.AWAY_GOALS));
+    console.log(Match.goalsOf(this.data, 1930, 10, Columns.AWAY_GOALS_OWN));
+    console.log(Match.goalsOf(this.data, 1930, 10, Columns.AWAY_GOALS_PENALTY));
   }
 }

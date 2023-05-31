@@ -131,3 +131,6 @@ dist
 
 # Vite
 *.local
+
+# JetBrains
+.idea

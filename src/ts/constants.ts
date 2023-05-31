@@ -1,3 +1,4 @@
+const NA = 'N/A';
 const Columns = {
   YEAR: 'Year',
   DATE: 'Date',
@@ -40,4 +41,4 @@ const Columns = {
   NOTES: 'Notes',
 };
 
-export { Columns };
+export { NA, Columns };

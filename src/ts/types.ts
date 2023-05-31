@@ -1,8 +1,3 @@
-type TChartOptions = {
-  years: number[];
-  columns: string[];
-};
-
 type TChartColumns = {
   Year: number;
   Date: string;
@@ -45,8 +40,4 @@ type TChartColumns = {
   Notes?: string;
 };
 
-type TChartData = {
-  [key: number]: TChartColumns[];
-};
-
-export type { TChartOptions, TChartColumns, TChartData };
+export type { TChartColumns };
