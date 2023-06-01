@@ -1,5 +1,25 @@
+import { EConsoleStyles } from './enums.ts';
+import { TConsole } from './types.ts';
+
 const NA = 'N/A';
-const Columns = {
+const HOME = 'HOME';
+const AWAY = 'AWAY';
+
+const EXIT_FAILURE: TConsole = [
+  '\n%cindex.ts (EXIT_FAILURE) - main()',
+  EConsoleStyles.ERROR,
+];
+const EXIT_SUCCESS: TConsole = [
+  '\n%cindex.ts (EXIT_SUCCESS) - main()',
+  EConsoleStyles.SUCCESS,
+];
+
+const WorldCupYears = [
+  1930 /* 1934, 1938, 1950, 1954, 1958, 1962, 1966, 1970, 1974, 1978, 1982, 1986, */,
+  /* 1990, 1994, 1998, 2002, 2006, 2010, 2014, 2018, */ 2022,
+];
+
+const MatchColumns = {
   YEAR: 'Year',
   DATE: 'Date',
   WEEKDAY: 'Weekday',
@@ -41,4 +61,21 @@ const Columns = {
   NOTES: 'Notes',
 };
 
-export { NA, Columns };
+const RE1_LIMIT = '45';
+const RE2_LIMIT = '90';
+const ET1_LIMIT = '105';
+const ET2_LIMIT = '120';
+
+export {
+  NA,
+  HOME,
+  AWAY,
+  EXIT_FAILURE,
+  EXIT_SUCCESS,
+  WorldCupYears,
+  MatchColumns,
+  RE1_LIMIT,
+  RE2_LIMIT,
+  ET1_LIMIT,
+  ET2_LIMIT,
+};

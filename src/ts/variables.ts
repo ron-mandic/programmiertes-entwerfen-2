@@ -1,10 +1,10 @@
 import { Chart } from './classes/Chart';
-import { Columns } from './constants';
+import { MatchColumns, WorldCupYears } from './constants';
 
 // Chart ########################################
 const chartOptions = {
-  years: [1930, 2022],
-  columns: Columns,
+  years: WorldCupYears,
+  columns: Object.values(MatchColumns),
 };
 const chart = new Chart(chartOptions);
 

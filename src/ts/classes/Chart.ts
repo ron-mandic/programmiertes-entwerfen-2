@@ -1,20 +1,20 @@
 import Http from 'axios';
-import { Columns } from '../constants';
-import { Match } from './Match';
+import { Match } from './Match.ts';
 
 export class Chart {
   public years: number[];
   public columns: string[];
   public data: any[];
 
-  public year: number | null = null;
+  public year: number | null;
 
   // Constructor ########################################
   constructor(options: any) {
     this.years = options.years;
     this.columns = options.columns;
-
     this.data = [];
+
+    this.year = null;
   }
 
   // Getter ########################################
@@ -29,8 +29,6 @@ export class Chart {
     try {
       await this.loadJSON();
       await this.render();
-
-      if (this.years) this.setYear(this.years[0]);
     } catch (error) {
       console.error(error);
     }
@@ -47,13 +45,26 @@ export class Chart {
     }
   }
 
-  async render() {
-    console.log(Match.goalsOf(this.data, 1930, 10, Columns.HOME_GOALS));
-    console.log(Match.goalsOf(this.data, 1930, 10, Columns.HOME_GOALS_OWN));
-    console.log(Match.goalsOf(this.data, 1930, 10, Columns.HOME_GOALS_PENALTY));
+  prerender() {
+    if (!this.years) {
+      throw new Error('prepareData: Cannot prepare data without years');
+    }
 
-    console.log(Match.goalsOf(this.data, 1930, 10, Columns.AWAY_GOALS));
-    console.log(Match.goalsOf(this.data, 1930, 10, Columns.AWAY_GOALS_OWN));
-    console.log(Match.goalsOf(this.data, 1930, 10, Columns.AWAY_GOALS_PENALTY));
+    this.setYear(this.years[0]);
+
+    for (let i = 0; i < this.years.length; i++) {
+      const year = this.years[i];
+
+      for (let j = 0; j < this.data[year].length; j++) {
+        Match.halfTimeScoresOf(this.data[year], j);
+        // TODO: Make tables for group stages
+      }
+    }
+  }
+
+  async render() {
+    this.prerender();
+
+    console.log(this.data[1930]);
   }
 }
