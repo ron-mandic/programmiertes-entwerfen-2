@@ -1,62 +1,64 @@
-import {
-  AWAY,
-  ET1_LIMIT,
-  ET2_LIMIT,
-  HOME,
-  MatchColumns,
-  NA,
-  RE1_LIMIT,
-  RE2_LIMIT,
-} from '../constants';
+import { AWAY, HOME, MatchColumns, NA } from '../constants';
 import { EGoalType, EMatchColumns, EMatchColumnsLong, ESymbol } from '../enums';
-import { IDictCountry, IDictCountrySets } from '../interfaces.ts';
-import { TGoal, TMatch, TMatchLong, TSide } from '../types.ts';
-import { funcSortAscTGoal } from '../functions.ts';
+import { IDictParticipants, IDictParticipantSets } from '../interfaces.ts';
+import { TGoal, TGoalType, TMatch, TMatchLong, TSide } from '../types.ts';
+import {
+  funcAddToIf,
+  funcFilterByGroupStages,
+  funcGetScoreTypes,
+  funcSortTGoalAsc,
+} from '../functions.ts';
 
 export class Match {
-  // Static properties ########################################
-  /**
-   * `Match.REG_EXP_HOME_AND_AWAY_GOALS` is a regular expression to match both home and away goals (not the long version
-   */
-  public static REG_EXP_HOME_AND_AWAY_GOALS =
-    /([^|·()]+)(?:\s\((OG|P)\))?\s·\s([\d+]+)/g;
-  /**
-   * `Match.REG_RE1_PLUS` is a regular expression for home goals scored in overtime of the regular first half
-   */
-  public static REG_RE1_PLUS = /45\+\d+/g;
+  // ################################################################################
+  // Static properties ##############################################################
+  // ################################################################################
+  public static REG_GOALS = /([^|·()]+)(?:\s\((OG|P)\))?\s·\s([\d+]+)/g;
   public static REG_RE1 = /45(\+\d+)?/g;
-  /**
-   * `Match.REG_RE2_PLUS` is a regular expression for home goals scored in overtime of the regular second half.
-   */
-  public static REG_RE2_PLUS = /90\+\d+/g;
   public static REG_RE2 = /90(\+\d+)?/g;
-  /**
-   * `Match.REG_ET1_PLUS` is a regular expression for home goals scored in overtime of the extra first half
-   */
-  public static REG_ET1_PLUS = /105\+\d+/g;
   public static REG_ET1 = /105(\+\d+)?/g;
-  /**
-   * `Match.REG_ET2_PLUS` is a regular expression for home goals scored in overtime of the extra second half
-   */
-  public static REG_ET2_PLUS = /120\+\d+/g;
   public static REG_ET2 = /120(\+\d+)?/g;
 
-  // Static methods ########################################
-  // Row ----------------------------------------
+  // ################################################################################
+  // Static methods #################################################################
+  // ################################################################################
   /**
-   * `Match.typeOf` returns the type of goal (undefined, OG, P)
-   * @param type - The type of goal
+   * Returns a human-readable type of goal
+   *
+   * Status: Done
+   *
+   * @param type - The type of goal ("OG", "P" or "NA")
+   * @returns The type of goal ("Own goal", "Penalty goal" or undefined)
    */
-  public static typeOf(type: string): undefined | EGoalType.OG | EGoalType.P {
+  public static getGoalTypeOf(
+    type: TGoalType
+  ): undefined | EGoalType.OG | EGoalType.P {
     return EGoalType[type as keyof typeof EGoalType];
   }
+
+  public static getRoundsOf(data: TMatch[], toSort = false): string[] {
+    const setRounds = new Set<string>();
+
+    for (const match of data) {
+      const round = match[EMatchColumns.ROUND];
+      setRounds.add(round);
+    }
+
+    return toSort ? Array.from(setRounds).sort() : Array.from(setRounds);
+  }
+
+  // ################################################################################
   /**
-   * `Match.goalsOf` returns an array of goals
+   * Extracts the minute, the player and the type of goal from a string and
+   * returns an array of TGoal objects
+   *
+   * Status: Done
+   *
    * @param data - The data with all matches
    * @param row - A single index number of the match
    * @param column - The column of the goal (HOME_GOALS, AWAY_GOALS, etc.)
    */
-  public static goalsOf(
+  public static getGoalsOf(
     data: TMatch[],
     row: number,
     column: string
@@ -64,138 +66,164 @@ export class Match {
     const expr = data[row][column];
     if (!expr) return undefined; // throw new Error(`goalsOf: No data for row ${row} at column "${column}"`);
 
-    const iterator = expr.matchAll(this.REG_EXP_HOME_AND_AWAY_GOALS);
+    const iterator = expr.matchAll(this.REG_GOALS);
     const arrGoals = [] as TGoal[];
 
     for (const match of iterator) {
       const minute = match[3] ?? NA;
       const scoredBy = match[1] ?? NA;
-      const type = match[2] ?? NA;
-      arrGoals.push({ minute, scoredBy, type: Match.typeOf(type) });
+      const type = (match[2] ?? NA) as TGoalType;
+      arrGoals.push({ minute, scoredBy, type: Match.getGoalTypeOf(type) });
     }
 
     return arrGoals;
   }
-  public static goalsBy(data: TMatch[], row: number, side: TSide): TGoal[] {
+
+  // ################################################################################
+  /**
+   * Extracts both regular goals, own goals and penalty goals from a match using `Match.goalsOf`
+   * and returns an array of `TGoal` objects sorted by minute.
+   *
+   * Status: Done
+   *
+   * @param data - The data with all matches
+   * @param row - A single index number of the match
+   * @param side - The team (HOME or AWAY)
+   * @returns An array of TGoal objects sorted by minute
+   *
+   * @see Match.getGoalsOf
+   */
+  public static getGoalsBy(data: TMatch[], row: number, side: TSide): TGoal[] {
     const arrGoals = [] as TGoal[];
 
-    const goals = Match.goalsOf(data, row, EMatchColumns[`${side}_GOALS`]);
-    const ownGoals = Match.goalsOf(
-      data,
-      row,
-      EMatchColumns[`${side}_GOALS_OWN`]
-    );
-    const penaltyGoals = Match.goalsOf(
-      data,
-      row,
-      EMatchColumns[`${side}_GOALS_PENALTY`]
-    );
+    const arrGoalsRegular = Match.getGoalsOf(
+        data,
+        row,
+        EMatchColumns[`${side}_GOALS`]
+      ),
+      arrGoalsOwn = Match.getGoalsOf(
+        data,
+        row,
+        EMatchColumns[`${side}_GOALS_OWN`]
+      ),
+      arrGoalsPenalty = Match.getGoalsOf(
+        data,
+        row,
+        EMatchColumns[`${side}_GOALS_PENALTY`]
+      );
 
-    if (goals) arrGoals.push(...goals);
-    if (ownGoals) arrGoals.push(...ownGoals);
-    if (penaltyGoals) arrGoals.push(...penaltyGoals);
+    if (arrGoalsRegular) arrGoals.push(...arrGoalsRegular);
+    if (arrGoalsOwn) arrGoals.push(...arrGoalsOwn);
+    if (arrGoalsPenalty) arrGoals.push(...arrGoalsPenalty);
 
-    return arrGoals.sort(funcSortAscTGoal);
+    return arrGoals.sort(funcSortTGoalAsc);
   }
 
+  // ################################################################################
   /**
-   * `Match.goalsOfHome` returns an array of goals with extra information about the half-time scores.
-   * The function is going to mutate the data by appending the half-time scores to the data set.
+   * Returns an array of `TMatchLong` objects with extra information about the half-time scores.
+   * The function is going to return mutated data by appending the half-time scores to the data set.
+   *
+   * Status: Done
+   *
    * @param data - The data with all matches
    * @param row - A single index number of the match
    */
-  public static halfTimeScoresOf(data: TMatchLong[], row: number): any {
-    const homeGoalsTotal = Match.goalsBy(data, row, HOME);
-    // console.log('homeGoalsTotal', homeGoalsTotal);
-    const awayGoalsTotal = Match.goalsBy(data, row, AWAY);
-    // console.log('awayGoalsTotal', awayGoalsTotal);
+  public static mutGetHalftimeScoresOf(
+    data: TMatch[],
+    row: number
+  ): TMatchLong {
+    let match = data[row];
+    if (!match) throw new Error(`halftimeScoresOf: No data for row ${row}`);
+    const arrGoalsByHome = Match.getGoalsBy(data, row, HOME);
+    const arrGoalsByAway = Match.getGoalsBy(data, row, AWAY);
 
-    // RE1 ----------------------------------------
-    const SCORE_RE1_HOME = homeGoalsTotal.filter(({ minute }: TGoal) => {
-      return +minute <= +RE1_LIMIT || this.REG_RE1.test(minute);
-    }).length;
-    const SCORE_RE1_AWAY = awayGoalsTotal.filter(({ minute }: TGoal) => {
-      return +minute <= +RE1_LIMIT || this.REG_RE1.test(minute);
-    }).length;
+    const {
+      scoreHomeRE1,
+      scoreAwayRE1,
+      scoreHomeRE2,
+      scoreAwayRE2,
+      scoreHomeET1,
+      scoreAwayET1,
+      scoreHomeET2,
+      scoreAwayET2,
+    } = funcGetScoreTypes(arrGoalsByHome, arrGoalsByAway);
 
-    data[row][
-      EMatchColumnsLong.SCORE_RE1
-    ] = `${SCORE_RE1_HOME}${ESymbol.HYPHEN_LONG}${SCORE_RE1_AWAY}`;
+    // RE1
+    funcAddToIf(
+      match,
+      EMatchColumnsLong.SCORE_RE1,
+      `${scoreHomeRE1}${ESymbol.HYPHEN_LONG}${scoreAwayRE1}`
+    );
+    // RE2
+    funcAddToIf(
+      match,
+      EMatchColumnsLong.SCORE_RE2,
+      `${scoreHomeRE2}${ESymbol.HYPHEN_LONG}${scoreAwayRE2}`
+    );
 
-    // RE2 ----------------------------------------
-    const SCORE_RE2_HOME = homeGoalsTotal.filter(({ minute }: TGoal) => {
-      return +minute <= +RE2_LIMIT || this.REG_RE2.test(minute);
-    }).length;
-    const SCORE_RE2_AWAY = awayGoalsTotal.filter(({ minute }: TGoal) => {
-      return +minute <= +RE2_LIMIT || this.REG_RE2.test(minute);
-    }).length;
+    // Guard clause #1
+    if (!match[EMatchColumnsLong.NOTES]) return match as TMatchLong;
 
-    data[row][
-      EMatchColumnsLong.SCORE_RE2
-    ] = `${SCORE_RE2_HOME}${ESymbol.HYPHEN_LONG}${SCORE_RE2_AWAY}`;
+    // ET1
+    funcAddToIf(
+      match,
+      EMatchColumnsLong.SCORE_ET1,
+      `${scoreHomeET1}${ESymbol.HYPHEN_LONG}${scoreAwayET1}`,
+      scoreHomeET1 >= scoreHomeRE2 && scoreAwayET1 >= scoreAwayRE2
+    );
+    // ET2
+    funcAddToIf(
+      match,
+      EMatchColumnsLong.SCORE_ET2,
+      `${scoreHomeET2}${ESymbol.HYPHEN_LONG}${scoreAwayET2}`,
+      scoreHomeET2 >= scoreHomeET1 && scoreAwayET2 >= scoreAwayET1
+    );
 
-    // EXIT ----------------------------------------
-    if (!data[row][EMatchColumnsLong.NOTES]) return;
-    // EXIT ----------------------------------------
-
-    // ET1 ----------------------------------------
-    const SCORE_ET1_HOME = homeGoalsTotal.filter(({ minute }: TGoal) => {
-      return +minute <= +ET1_LIMIT || this.REG_ET1.test(minute);
-    }).length;
-    const SCORE_ET1_AWAY = awayGoalsTotal.filter(({ minute }: TGoal) => {
-      return +minute <= +ET1_LIMIT || this.REG_ET1.test(minute);
-    }).length;
-
-    if (SCORE_ET1_HOME >= SCORE_RE2_HOME && SCORE_ET1_AWAY >= SCORE_RE2_AWAY) {
-      data[row][
-        EMatchColumnsLong.SCORE_ET1
-      ] = `${SCORE_ET1_HOME}${ESymbol.HYPHEN_LONG}${SCORE_ET1_AWAY}`;
-    }
-
-    // ET2 ----------------------------------------
-    const SCORE_ET2_HOME = homeGoalsTotal.filter(({ minute }: TGoal) => {
-      return +minute <= +ET2_LIMIT || this.REG_ET2.test(minute);
-    }).length;
-    const SCORE_ET2_AWAY = awayGoalsTotal.filter(({ minute }: TGoal) => {
-      return +minute <= +ET2_LIMIT || this.REG_ET2.test(minute);
-    }).length;
-
-    if (SCORE_ET2_HOME >= SCORE_ET1_HOME && SCORE_ET2_AWAY >= SCORE_ET1_AWAY) {
-      data[row][
-        EMatchColumnsLong.SCORE_ET2
-      ] = `${SCORE_ET2_HOME}${ESymbol.HYPHEN_LONG}${SCORE_ET2_AWAY}`;
-    }
-
-    return data;
+    return match as TMatchLong;
   }
 
-  // Rows ----------------------------------------
+  // ################################################################################
   /**
-   * `Match.countriesOf` returns an array of countries as strings
+   * Returns an array of all countries that participated in the tournament. The returned
+   * array is sorted by default.
+   *
+   * Status: Done
+   *
    * @param data - The data with all matches
-   * @param isSorted - Whether the array should be sorted
+   * @param toSort - Whether the array should be sorted
+   * @returns A string array of all countries that participated in the tournament
    */
-  public static countriesOf(data: TMatch[], isSorted = true): any {
+  public static getParticipantsOf(
+    data: TMatch[] | TMatchLong[],
+    toSort = true
+  ): string[] {
     const setCountries = new Set<string>();
 
     for (let i = 0; i < data.length; i++) {
       const homeCountry = data[i][MatchColumns.HOME]!;
       const awayCountry = data[i][MatchColumns.AWAY]!;
-
       setCountries.add(homeCountry).add(awayCountry);
     }
 
-    return isSorted
-      ? Array.from(setCountries).sort()
-      : Array.from(setCountries);
+    return toSort ? Array.from(setCountries).sort() : Array.from(setCountries);
   }
+
+  // ################################################################################
   /**
-   * `Match.encountersOf` returns an object with countries as keys and their sets of countries as values
+   * Returns an object considered to be a dictionary of type `IDictCountrySets` with all
+   * participating countries as keys and a set of all countries that the key country
+   * has played against as values.
+   *
+   * Status: Done
+   *
    * @param data - The data with all matches
    */
-  public static encountersOf(data: TMatch[] | TMatchLong[]): IDictCountrySets {
-    const arrCountries: string[] = this.countriesOf(data);
-    const objOccurrences = {} as IDictCountrySets;
+  public static getEncountersOf(
+    data: TMatch[] | TMatchLong[]
+  ): IDictParticipantSets {
+    const arrCountries: string[] = this.getParticipantsOf(data);
+    const objOccurrences = {} as IDictParticipantSets;
 
     if (!arrCountries)
       throw new Error('countriesOf: arrCountries is undefined');
@@ -217,30 +245,46 @@ export class Match {
 
     return objOccurrences;
   }
+
+  // ################################################################################
   /**
-   * `Match.groupsOf` returns a copied object with a lookup table and an array of arrays of countries as strings.
+   * Returns a reduced object of type `IDictCountry` which holds a lookup table and an array of arrays of countries as strings.
    * The lookup table specifies the index of the group for each country. `groups` holds each group as an array of countries.
+   *
+   * Regarding the input, the function expects an object of type `IDictCountrySets` which holds all encounters of each individual
+   * participant of the tournament.
+   *
+   * Status: Done
+   *
    * @param data - The data with the mapping of ine country to its opponents
-   * @param isSorted - Whether the array should be sorted
+   * @param toSort - Whether the array should be sorted
    */
-  public static groupsOf(
-    data: IDictCountrySets,
-    isSorted = true
-  ): IDictCountry {
-    const dict = { lookup: {}, groups: [] } as IDictCountry;
-    const _data = structuredClone(data);
+  public static getGroupsFor(
+    data: TMatch[] | TMatchLong[],
+    toSort = false
+  ): IDictParticipants {
+    const arrGroupStages = data.filter(funcFilterByGroupStages);
+    const dict = {
+      data: arrGroupStages,
+      lookup: {},
+      groups: [],
+    } as IDictParticipants;
+    const _data = Match.getEncountersOf(arrGroupStages);
     let counter = 0;
 
     for (let value in _data) {
       const setCountries = _data[value];
+      if (!setCountries)
+        throw new Error(`participantEncountersOf: No data for ${value}`);
 
       for (let country of setCountries) {
         delete _data[country];
       }
 
-      const arrCountries = isSorted
+      const arrCountries = toSort
         ? [value, ...Array.from(setCountries)].sort()
         : [value, ...Array.from(setCountries)];
+
       for (let country of arrCountries) {
         dict.lookup[country] = counter;
       }
@@ -251,15 +295,6 @@ export class Match {
 
     return dict;
   }
-  /**
-   * `Match.groupTablesOf` creates the tables with stats ranging from the total number of matches
-   * to the number of goals.
-   * @param data - The data with all matches
-   * @param dict - The dictionary with the lookup table and the groups
-   */
-  // TODO: Create the group tables
-  public static groupTablesOf(data: TMatch[], dict: IDictCountry) {
-    const _dict = structuredClone(dict);
-    console.log(data, _dict);
-  }
+
+  // ################################################################################
 }

@@ -1,10 +1,13 @@
-interface IDictCountry {
+import { TMatch, TMatchLong } from './types.ts';
+
+interface IDictParticipants {
+  data: TMatch[] | TMatchLong[];
   lookup: { [key: string]: number };
   groups: string[][];
 }
 
-interface IDictCountrySets {
+interface IDictParticipantSets {
   [key: string]: Set<string>;
 }
 
-export type { IDictCountry, IDictCountrySets };
+export type { IDictParticipants, IDictParticipantSets };

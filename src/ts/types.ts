@@ -1,5 +1,5 @@
 import { EGoalType } from './enums.ts';
-import { HOME, AWAY } from './constants.ts';
+import { HOME, AWAY, OG, P, NA } from './constants.ts';
 
 type TConsole = [string, string];
 
@@ -53,6 +53,18 @@ type TMatchLong = TMatch & {
   'Score (ET2)'?: string;
 };
 
+type TScoreTypes = {
+  scoreHomeRE1: number;
+  scoreAwayRE1: number;
+  scoreHomeRE2: number;
+  scoreAwayRE2: number;
+  scoreHomeET1: number;
+  scoreAwayET1: number;
+  scoreHomeET2: number;
+  scoreAwayET2: number;
+};
+
+type TGoalType = typeof OG | typeof P | typeof NA;
 type TGoal = {
   minute: string;
   scoredBy: string;
@@ -80,7 +92,9 @@ export type {
   TSide,
   TMatch,
   TMatchLong,
+  TScoreTypes,
   TGoal,
+  TGoalType,
   TGoalLong,
   TGroupRow,
 };

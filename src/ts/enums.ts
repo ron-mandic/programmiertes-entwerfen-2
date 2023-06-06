@@ -1,8 +1,8 @@
 enum EConsoleStyles {
-  SUCCESS = 'background-color: #44aa6b; color: white; padding: .25rem .5rem; border-radius: .25rem;',
-  INFO = 'background-color: #446bcc; padding: .25rem .5rem; border-radius: .25rem;',
-  WARNING = 'background-color: #eeaa46; padding: .25rem .5rem; border-radius: .25rem;',
-  ERROR = 'background-color: #cc446b; color: white; padding: .25rem .5rem; border-radius: .25rem;',
+  SUCCESS = 'background-color: #44aa6b; color: white; padding: .25rem .5rem; border-radius: .25rem; font-style: italic;',
+  INFO = 'background-color: #446bcc; padding: .25rem .5rem; border-radius: .25rem; font-style: italic;',
+  WARNING = 'background-color: #eeaa46; padding: .25rem .5rem; border-radius: .25rem; font-style: italic;',
+  ERROR = 'background-color: #cc446b; color: white; padding: .25rem .5rem; border-radius: .25rem; font-style: italic;',
 }
 
 enum ESymbol {
