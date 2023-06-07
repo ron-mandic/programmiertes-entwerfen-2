@@ -113,6 +113,17 @@ enum EWeekday {
   SATURDAY,
 }
 
+enum EMonthDays {
+  MAY = 31,
+  JUNE = 30,
+  JULY = 31,
+  AUGUST = 31,
+  SEPTEMBER = 30,
+  OCTOBER = 31,
+  NOVEMBER = 30,
+  DECEMBER = 31,
+}
+
 enum ERound {
   GROUP_STAGE = 'Group stage',
   GROUP_STAGE_PLAYOFF = 'Group stage play-off',
@@ -135,5 +146,6 @@ export {
   EMatchColumnsLong,
   EGoalType,
   EWeekday,
+  EMonthDays,
   ERound,
 };
