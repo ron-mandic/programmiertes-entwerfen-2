@@ -1,12 +1,12 @@
 .flex {
-	display: flex;
+  display: flex;
 }
 
 .xy {
-	justify-content: center;
-	align-items: center;
+  justify-content: center;
+  align-items: center;
 }
 
-.no-x {
-	overflow-x: hidden;
+.no-scroll-x {
+  overflow-x: hidden;
 }

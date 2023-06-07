@@ -17,8 +17,28 @@ const EXIT_SUCCESS: TConsole = [
 ];
 
 const WorldCupYears = [
-  1930, 1934, 1938, 1950, 1954, 1958, 1962, 1966, 1970, 1974, 1978, 1982, 1986,
-  1990, 1994, 1998, 2002, 2006, 2010, 2014, 2018, 2022,
+  1930 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1930 */,
+  1934 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1934 */,
+  1938 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1938 */,
+  1950 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1950 */,
+  1954 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1954 */,
+  1958 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1958 */,
+  1962 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1962 */,
+  1966 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1966 */,
+  1970 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1970 */,
+  1974 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1974 */,
+  1978 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1978 */,
+  1982 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1982 */,
+  1986 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1986 */,
+  1990 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1990 */,
+  1994 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1994 */,
+  1998 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_1998 */,
+  2002 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_2002 */,
+  2006 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_2006 */,
+  2010 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_2010 */,
+  2014 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_2014 */,
+  2018 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_2018 */,
+  2022 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_2022 */,
 ];
 
 const MatchColumns = {

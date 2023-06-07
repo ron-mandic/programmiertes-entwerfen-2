@@ -1,41 +1,56 @@
 import Http from 'axios';
+import Moment from 'moment';
 import { Match } from './Match.ts';
 import { TMatch, TMatchLong } from '../types.ts';
+import { IDictParticipants } from '../interfaces.ts';
+import { EMatchColumnsLong } from '../enums.ts';
 
 export class Chart {
-  public years: number[];
-  public columns: string[];
-  public data: { [key: number]: TMatch[] | TMatchLong[] };
+  public arrYears: number[];
+  public arrColumns: string[];
+  public objData: { [key: number]: TMatch[] | TMatchLong[] };
+  public arrData: TMatch[] | TMatchLong[];
 
-  public year: number | null;
-  public wm: (TMatch[] | TMatchLong[]) | null;
+  public dictGroups: (IDictParticipants | undefined) | null;
+
+  public currentYear: number | null;
+  public currentWM: (TMatch[] | TMatchLong[]) | null;
 
   // ################################################################################
   // Constructor ####################################################################
   // ################################################################################
   constructor(options: any) {
-    this.years = options.years;
-    this.columns = options.columns;
-    this.data = [];
+    this.arrYears = options.years;
+    this.arrColumns = options.columns;
 
-    this.year = null;
-    this.wm = null;
+    this.objData = {};
+    this.arrData = [];
+
+    this.dictGroups = null;
+
+    this.currentYear = null;
+    this.currentWM = null;
   }
 
   // ################################################################################
   // Setter #########################################################################
   // ################################################################################
   setYear(year: number) {
-    this.year = year;
+    this.currentYear = year;
   }
 
   // ################################################################################
   setWM(wm: TMatch[] | TMatchLong[]) {
-    this.wm = wm;
+    this.currentWM = wm;
   }
 
   // ################################################################################
   // Methods ########################################################################
+  // ################################################################################
+  log() {
+    console.log(this);
+  }
+
   // ################################################################################
   async init() {
     try {
@@ -48,11 +63,11 @@ export class Chart {
 
   // ################################################################################
   async loadJSON() {
-    for (let i = 0; i < this.years.length; i++) {
+    for (let i = 0; i < this.arrYears.length; i++) {
       try {
-        const response = await Http.get(`/json/${this.years[i]}.json`);
+        const response = await Http.get(`/json/${this.arrYears[i]}.json`);
         if (response.status === 200) {
-          this.data[this.years[i]] = response.data;
+          this.objData[this.arrYears[i]] = response.data;
         }
       } catch (error) {
         console.error(error);
@@ -61,30 +76,42 @@ export class Chart {
   }
 
   // ################################################################################
+  assign() {
+    this.setYear(this.arrYears[0]);
+    this.setWM(this.objData[this.currentYear!]);
+    this.arrData = Object.values(this.objData).flat();
+    this.dictGroups = Match.getGroupsFor(this.currentWM!);
+  }
+
   prerender() {
-    if (!this.years) {
+    if (!this.arrYears) {
       throw new Error('prepareData: Cannot prepare data without years');
     }
 
-    this.setYear(this.years[0]);
-    this.setWM(this.data[this.year!]);
+    for (let i = 0; i < this.arrYears.length; i++) {
+      const year = this.arrYears[i];
 
-    for (let i = 0; i < this.years.length; i++) {
-      const year = this.years[i];
-
-      for (let j = 0; j < this.data[year].length; j++) {
-        let wm = this.data[year];
+      for (let j = 0; j < this.objData[year].length; j++) {
+        let wm = this.objData[year];
 
         Match.mutGetHalftimeScoresOf(wm, j);
         // ...
       }
     }
+    this.assign();
   }
 
   // ################################################################################
   async render() {
     this.prerender();
-    console.log(Match.getRoundsOf(this.data[1930]!));
-    console.log(Match.getGroupsFor(this.data[1930]!));
+
+    console.log(
+      Moment.min(
+        this.arrData.map((match) => Moment(match[EMatchColumnsLong.DATE]))
+      ).format('YYYY-MM-DD'),
+      Moment.max(
+        this.arrData.map((match) => Moment(match[EMatchColumnsLong.DATE]))
+      ).format('YYYY-MM-DD')
+    );
   }
 }

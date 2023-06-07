@@ -4,6 +4,7 @@ import { EXIT_SUCCESS } from './ts/constants.ts';
 async function main() {
   try {
     await chart.init();
+    chart.log();
   } catch (error) {
     console.error(error);
   }

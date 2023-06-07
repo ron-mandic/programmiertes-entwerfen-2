@@ -262,8 +262,10 @@ export class Match {
   public static getGroupsFor(
     data: TMatch[] | TMatchLong[],
     toSort = false
-  ): IDictParticipants {
+  ): IDictParticipants | undefined {
     const arrGroupStages = data.filter(funcFilterByGroupStages);
+    if (!arrGroupStages.length) return;
+
     const dict = {
       data: arrGroupStages,
       lookup: {},
