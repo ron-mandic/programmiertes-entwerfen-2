@@ -1,5 +1,9 @@
 import { TMatch, TMatchLong } from './types.ts';
 
+interface IDict {
+  [key: string]: any;
+}
+
 interface IDictParticipants {
   data: TMatch[] | TMatchLong[];
   lookup: { [key: string]: number };
@@ -10,4 +14,4 @@ interface IDictParticipantSets {
   [key: string]: Set<string>;
 }
 
-export type { IDictParticipants, IDictParticipantSets };
+export type { IDict, IDictParticipants, IDictParticipantSets };

@@ -139,6 +139,20 @@ enum ERound {
   FINAL = 'Final',
 }
 
+enum EUnitOfTime {
+  YEAR = 'year',
+  Years = 'years',
+  Y = 'y',
+  MONTH = 'month',
+  MONTHS = 'months',
+  M = 'M',
+  WEEK = 'week',
+  WEEKS = 'weeks',
+  W = 'w',
+  DAY = 'day',
+  DAYS = 'days',
+}
+
 export {
   EConsoleStyles,
   ESymbol,
@@ -148,4 +162,5 @@ export {
   EWeekday,
   EMonthDays,
   ERound,
+  EUnitOfTime,
 };

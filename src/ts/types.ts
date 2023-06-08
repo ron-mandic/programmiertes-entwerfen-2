@@ -87,6 +87,16 @@ type TGroupRow = {
   goalsDiff: number;
 };
 
+type TJQueryPlainObject = JQuery.PlainObject<
+  | string
+  | number
+  | ((
+      this: HTMLElement,
+      index: number,
+      value: string
+    ) => string | number | void | undefined)
+>;
+
 export type {
   TConsole,
   TSide,
@@ -97,4 +107,5 @@ export type {
   TGoalType,
   TGoalLong,
   TGroupRow,
+  TJQueryPlainObject,
 };

@@ -1,8 +1,10 @@
 import { TGoal, TMatch, TMatchLong, TScoreTypes } from './types.ts';
 import { Type } from './classes/Type.ts';
-import { ET1_LIMIT, ET2_LIMIT, RE1_LIMIT, RE2_LIMIT } from './constants.ts';
+import {DATE_RANGE_IN_DAYS, ET1_LIMIT, ET2_LIMIT, RE1_LIMIT, RE2_LIMIT} from './constants.ts';
 import { Match } from './classes/Match.ts';
 import { EMatchColumnsLong, ERound } from './enums.ts';
+import $ from 'jquery';
+import { Chart } from './classes/Chart.ts';
 
 /**
  * `funcSortAscTGoal` sorts an array of goals ascending by minute in alphabetical order
@@ -93,6 +95,52 @@ function funcAddToIf(
   return obj;
 }
 
+/**
+ * @param e - The event to be bound to
+ */
+function funcResizeAppWidth(
+  e: JQuery.TriggeredEvent<HTMLElement, undefined, HTMLElement, HTMLElement>
+) {
+  e.preventDefault();
+  // @ts-ignore
+  let deltaX = e.originalEvent.wheelDeltaX, deltaY = e.originalEvent.wheelDeltaY;
+  let offset = 480;
+  let app = $('#app');
+  let appInnerWidth = app.innerWidth()!;
+
+  if (deltaX) return;
+
+  if (deltaY > 0) {
+    if (appInnerWidth < 1920 * 4) {
+      app.css('width', `+=${offset}px`);
+    }
+  } else {
+    if (appInnerWidth > 1920) {
+      app.css('width', `-=${offset}px`);
+    }
+    if (appInnerWidth < 1920) {
+      app.css('width', `1920px`);
+    }
+  }
+}
+
+function funcResizeWMMatchWidth() {
+  Chart.matchDotSizes = $('#app').innerWidth()! / DATE_RANGE_IN_DAYS;
+
+  for (let match of Array.from($('.wm_match'))) {
+    $(match).css({
+      width: `${Chart.matchDotSizes! * 0.75}px`,
+      height: `${Chart.matchDotSizes! * 0.75}px`,
+    });
+  }
+
+  for (let match of Array.from($('.wm_match__empty'))) {
+    $(match).css({
+      width: `${Chart.matchDotSizes! * 0.75}px`,
+    });
+  }
+}
+
 export {
   funcSortTGoalAsc,
   funcFilterScoreOfRE1,
@@ -109,4 +157,6 @@ export {
   funcGetScoreTypes,
   funcAddTo,
   funcAddToIf,
+  funcResizeAppWidth,
+  funcResizeWMMatchWidth,
 };

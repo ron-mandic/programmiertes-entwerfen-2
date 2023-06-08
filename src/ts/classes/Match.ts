@@ -1,6 +1,10 @@
 import { AWAY, HOME, MatchColumns, NA } from '../constants';
 import { EGoalType, EMatchColumns, EMatchColumnsLong, ESymbol } from '../enums';
-import { IDictParticipants, IDictParticipantSets } from '../interfaces.ts';
+import {
+  IDict,
+  IDictParticipants,
+  IDictParticipantSets,
+} from '../interfaces.ts';
 import { TGoal, TGoalType, TMatch, TMatchLong, TSide } from '../types.ts';
 import {
   funcAddToIf,
@@ -299,4 +303,30 @@ export class Match {
   }
 
   // ################################################################################
+  /**
+   * Returns an object considered to be a simple dictionary of type `IDict` which holds
+   * the accumulated number of occurrences of each property of the given data.
+   *
+   * Status: Done
+   *
+   * @param data
+   * @param prop
+   * @returns An object of type `IDict` with the accumulated number of occurrences of each property of the given data
+   */
+  public static getOccurrencesOf(
+    data: TMatch[] | TMatchLong[],
+    prop: string | number
+  ): IDict {
+    const objDict = {} as IDict;
+
+    for (let match of data!) {
+      if (!objDict[match[prop]]) {
+        objDict[match[prop]] = 1;
+      } else {
+        objDict[match[prop]]++;
+      }
+    }
+
+    return objDict;
+  }
 }

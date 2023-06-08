@@ -2,14 +2,12 @@ import $ from 'jquery';
 import Http from 'axios';
 import Moment from 'moment';
 import { Match } from './Match.ts';
-import { TMatch, TMatchLong } from '../types.ts';
-import { IDictParticipants } from '../interfaces.ts';
-import { EMatchColumns } from '../enums.ts';
-import {
-  DATE_RANGE_IN_DAYS,
-  TOURNAMENT_END_LONG,
-  TOURNAMENT_START_LONG,
-} from '../constants.ts';
+import { TJQueryPlainObject, TMatch, TMatchLong } from '../types.ts';
+import {IDict, IDictParticipants} from '../interfaces.ts';
+import { EMatchColumns, EUnitOfTime } from '../enums.ts';
+import {DATE_RANGE_IN_DAYS, NA, TOURNAMENT_START_LONG} from '../constants.ts';
+import { funcResizeAppWidth, funcResizeWMMatchWidth } from '../functions.ts';
+import {Type} from "./Type.ts";
 
 export class Chart {
   public arrYears: number[];
@@ -21,6 +19,11 @@ export class Chart {
 
   public currentYear: number | null;
   public currentWM: (TMatch[] | TMatchLong[]) | null;
+
+  // ################################################################################
+  // Static properties ##############################################################
+  // ################################################################################
+  public static matchDotSizes: null | number = null;
 
   // ################################################################################
   // Constructor ####################################################################
@@ -36,6 +39,16 @@ export class Chart {
 
     this.currentYear = null;
     this.currentWM = null;
+  }
+
+  // ################################################################################
+  // Static methods #################################################################
+  // ################################################################################
+  public static createDot(
+    properties: TJQueryPlainObject,
+    innerHTML = '<div class="wm_match"></div>'
+  ) {
+    return $(innerHTML).css(properties);
   }
 
   // ################################################################################
@@ -68,6 +81,22 @@ export class Chart {
   }
 
   // ################################################################################
+  // TODO: Document
+  initEvents() {
+    $(window).resize(() => {
+      Chart.matchDotSizes = $('#app').innerWidth()! / DATE_RANGE_IN_DAYS;
+    });
+
+    new ResizeObserver(funcResizeWMMatchWidth).observe($('#app')![0]);
+  }
+
+  // ################################################################################
+  // TODO: Document
+  initInteractions() {
+    $('main').bind('mousewheel', funcResizeAppWidth);
+  }
+
+  // ################################################################################
   async loadJSON() {
     for (let i = 0; i < this.arrYears.length; i++) {
       try {
@@ -89,6 +118,7 @@ export class Chart {
     this.dictGroups = Match.getGroupsFor(this.currentWM!);
   }
 
+  // ################################################################################
   prerender() {
     if (!this.arrYears) {
       throw new Error('prepareData: Cannot prepare data without years');
@@ -106,117 +136,80 @@ export class Chart {
     this.assign();
   }
 
-  paint() {
-    let hasBeenSet = false;
-    let wm = this.currentWM;
-    let wmHTML = $(`.wm[data-year="${this.currentYear}"]`);
-    let dotDimensionsMax = wmHTML.innerWidth()! / DATE_RANGE_IN_DAYS;
+  // ################################################################################
+  compose() {
+    for (let i = 0; i < this.arrYears.length; i++) {
+      const year = this.arrYears[i],
+        wm = this.objData[year],
+        wmHTML = $(`.wm[data-year="${year}"]`);
 
-    const objOccurrences: { [key: string]: number } = {};
+      Chart.matchDotSizes = wmHTML.innerWidth()! / DATE_RANGE_IN_DAYS;
 
-    let dateStartLong = Moment(`${this.currentYear}-${TOURNAMENT_START_LONG}`);
-    // let dateStart = Moment(wm![0][EMatchColumns.DATE]!);
-    // let dateEnd = Moment(wm![wm!.length - 1][EMatchColumns.DATE]!);
-    let dateEndLong = Moment(`${this.currentYear}-${TOURNAMENT_END_LONG}`);
+      let daysDiffTemp = null;
+      let dictWMMatchDots = {} as IDict;
 
-    console.log(wm);
-    console.log(wmHTML, dotDimensionsMax);
-    console.log(dateStartLong.format('YYYY-MM-DD'));
-    // console.log(dateStart.format('YYYY-MM-DD'));
-    // console.log(dateEnd.format('YYYY-MM-DD'));
-    console.log(dateEndLong.format('YYYY-MM-DD'));
+      for (let match of wm!) {
+        let dateStartLong = Moment(`${year}-${TOURNAMENT_START_LONG}`),
+          date = match[EMatchColumns.DATE]!,
+          daysDiff = Moment(date).diff(dateStartLong, EUnitOfTime.DAYS);
 
-    let daysTotal = dateEndLong.diff(dateStartLong, 'days');
-
-    for (let match of wm!) {
-      if (!objOccurrences[match[EMatchColumns.DATE]]) {
-        objOccurrences[match[EMatchColumns.DATE]] = 1;
-      } else {
-        objOccurrences[match[EMatchColumns.DATE]]++;
-      }
-    }
-
-    console.log(objOccurrences);
-
-    for (let match of wm!) {
-      let date = match[EMatchColumns.DATE]!;
-      let dateMoment = Moment(date);
-      let days = dateMoment.diff(dateStartLong, 'days');
-      console.log(dateMoment.format('YYYY-MM-DD'), days);
-
-      const matchHTML = $('<div class="wm_match" tabindex="0"></div>');
-      matchHTML.css({
-        left: `${(days / daysTotal) * 100}%`,
-        width: `${dotDimensionsMax * 0.8}px`,
-        height: `${dotDimensionsMax * 0.8}px`,
-      });
-
-      matchHTML.attr('data-date', date);
-      if (objOccurrences[date] > 1 && !hasBeenSet) {
-        matchHTML.attr('data-occurrences', objOccurrences[date]);
-        hasBeenSet = true;
-      } else {
-        hasBeenSet = false;
-      }
-
-      wmHTML.append(matchHTML);
-    }
-
-    $('main').bind('mousewheel', (e) => {
-      // @ts-ignore
-      let delta = e.originalEvent.wheelDeltaY;
-      let app = $('#app');
-      let appInnerWidth = app.innerWidth()!;
-
-      if (delta > 0) {
-        if (appInnerWidth <= 1920 * 4) app.css('width', `+=${delta / 10}px`);
-      } else {
-        if (appInnerWidth > 1920) app.css('width', `+=${delta / 10}px`);
-        if (appInnerWidth < 1920) {
-          app.css('width', `1920px`);
+        if (!dictWMMatchDots[daysDiff]) {
+          dictWMMatchDots[daysDiff] = {
+            matches: [match],
+            occurrences: 1
+          };
+        } else {
+          dictWMMatchDots[daysDiff].matches.push(match);
+          dictWMMatchDots[daysDiff].occurrences++;
         }
       }
 
-      /**
-       * Credits: https://stackoverflow.com/a/40832273
-       * @param e MouseMoveEvent
-       */
-      const updateScrollPos = function (
-        e: JQuery.MouseMoveEvent<Document, undefined, Document, Document>
-      ) {
-        $('html').css('cursor', 'grabbing');
-        let main = $('main');
-        main.scrollLeft(main.scrollLeft()! / 10 + (clickX - e.pageX));
-      };
+      for (let i = 0; i < DATE_RANGE_IN_DAYS; i++) {
+        if (!dictWMMatchDots[i]) {
+          wmHTML.append(
+            Chart.createDot( {
+              left: `${(i / (DATE_RANGE_IN_DAYS)) * 100}%`,
+              width: `${Chart.matchDotSizes * 0.75}px`,
+              height: `${Chart.matchDotSizes * 0.75}px`,
+            }, '<div class="wm_match__empty"></div>')
+          );
+          continue;
+        }
 
-      let clicked = false,
-        clickX: number;
-      $(document).on({
-        mousemove: function (e) {
-          clicked && updateScrollPos(e);
-        },
-        mousedown: function (e) {
-          e.preventDefault();
-          clicked = true;
-          clickX = e.offsetX;
-        },
-        mouseup: function () {
-          clicked = false;
-          $('html').css('cursor', 'auto');
-        },
-      });
+        if (Type.isNull(daysDiffTemp) || daysDiffTemp !== i) {
+          const matchHTML = Chart.createDot(
+            {
+              left: `${(i / (DATE_RANGE_IN_DAYS)) * 100}%`,
+              width: `${Chart.matchDotSizes * 0.75}px`,
+              height: `${Chart.matchDotSizes * 0.75}px`,
+            },
+            '<div class="wm_match" tabindex="0"></div>'
+          );
 
-      // window resize event
-      $(window).resize(() => {
-        dotDimensionsMax = wmHTML.innerWidth()! / DATE_RANGE_IN_DAYS;
-        // console.log(dotDimensionsMax);
-      });
-    });
+          if (dictWMMatchDots[i].occurrences > 1) {
+            matchHTML.attr('data-occurrences', dictWMMatchDots[i].occurrences);
+          }
+
+          matchHTML.attr('data-date', dictWMMatchDots[i].matches[0][EMatchColumns.DATE] ?? NA);
+          matchHTML.attr('data-weekday', dictWMMatchDots[i].matches[0][EMatchColumns.WEEKDAY] ?? NA);
+          matchHTML.data('data-matches', dictWMMatchDots[i].matches);
+
+          wmHTML.append(matchHTML);
+        }
+
+        daysDiffTemp = i;
+      }
+
+      dictWMMatchDots = {};
+    }
   }
 
   // ################################################################################
   async render() {
     this.prerender();
-    this.paint();
+    this.compose();
+
+    this.initEvents();
+    this.initInteractions();
   }
 }
