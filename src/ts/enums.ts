@@ -92,10 +92,11 @@ enum EMatchColumnsLong {
   HOME_SUBSTITUTES = 'Home (_Substitutes)',
   AWAY_SUBSTITUTES = 'Away (_Substitutes)',
   NOTES = 'Notes',
-  SCORE_RE1 = 'Score (RE1)',
-  SCORE_RE2 = 'Score (RE2)',
-  SCORE_ET1 = 'Score (ET1)',
-  SCORE_ET2 = 'Score (ET2)',
+  // TODO: Check if this refactoring causes any issues
+  SCORE_RE1 = 'Score (1.1)',
+  SCORE_RE2 = 'Score (1.2)',
+  SCORE_ET1 = 'Score (2.1)',
+  SCORE_ET2 = 'Score (2.2)',
 }
 
 enum EGoalType {
@@ -139,6 +140,11 @@ enum ERound {
   FINAL = 'Final',
 }
 
+enum EStageMode {
+  GROUP,
+  KNOCKOUT,
+}
+
 enum EUnitOfTime {
   YEAR = 'year',
   Years = 'years',
@@ -153,6 +159,19 @@ enum EUnitOfTime {
   DAYS = 'days',
 }
 
+enum ERegExpFlags {
+  GLOBAL = 'g',
+  CASE_INSENSITIVE = 'i',
+  MULTILINE = 'm',
+  DOT_ALL = 's',
+  UNICODE = 'u',
+  STICKY = 'y',
+}
+
+enum EMatchLongInfo {
+  REPLAY = 'Replay',
+}
+
 export {
   EConsoleStyles,
   ESymbol,
@@ -162,5 +181,8 @@ export {
   EWeekday,
   EMonthDays,
   ERound,
+  EStageMode,
   EUnitOfTime,
+  ERegExpFlags,
+  EMatchLongInfo,
 };

@@ -1,7 +1,7 @@
 @use "variables" as v;
 
 main {
-  gap: 0.5rem;
+  // gap: 0.5rem;
 }
 
 main::after {
@@ -22,9 +22,13 @@ main::after {
   width: clamp(#{v.$app-width-min}, 100%, #{v.$app-width-max});
   height: v.$app-height;
   aspect-ratio: v.$app-aspect-ratio;
+
   background-color: darken(v.$bg-color, 5);
   outline: v.$border;
-  border-radius: v.$border-radius;
+
+  border-top-left-radius: v.$border-radius;
+  border-bottom-left-radius: v.$border-radius;
+  transition: all 0.5s ease-in-out;
 
   z-index: 2;
 }

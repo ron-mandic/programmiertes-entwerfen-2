@@ -17,11 +17,17 @@ aside {
   height: v.$app-height;
 
   outline: v.$border;
-  border-radius: v.$border-radius;
+  border-top-right-radius: v.$border-radius;
+  border-bottom-right-radius: v.$border-radius;
   font-family: "Roboto Condensed", sans-serif;
+
+  transition: all 0.5s ease-in-out;
 
   &.min {
     display: none;
+    border-radius: v.$border-radius;
+
+    transition: all 0.5s ease-in-out;
   }
 }
 

@@ -3,8 +3,12 @@ import Http from 'axios';
 import Moment from 'moment';
 import { Match } from './Match.ts';
 import { TJQueryPlainObject, TMatch, TMatchLong } from '../types.ts';
-import { IDict, IDictParticipants } from '../interfaces.ts';
-import { EMatchColumns, EUnitOfTime } from '../enums.ts';
+import {
+  IDict,
+  IDictParticipants,
+  IObjStageGroupResult,
+} from '../interfaces.ts';
+import { EMatchColumns, EStageMode, EUnitOfTime } from '../enums.ts';
 import {
   CHART_WIDTH_MAX,
   CHART_WIDTH_MIN,
@@ -13,7 +17,11 @@ import {
   NA,
   TOURNAMENT_START_LONG,
 } from '../constants.ts';
-import { funcResizeAppWidth, funcResizeWMMatchWidth } from '../functions.ts';
+import {
+  funcGetAllWorldCupStagesOf,
+  funcResizeAppWidth,
+  funcResizeWMMatchWidth,
+} from '../functions.ts';
 import { Type } from './Type.ts';
 
 export class Chart {
@@ -22,10 +30,14 @@ export class Chart {
   public objData: { [key: number]: TMatch[] | TMatchLong[] };
   public arrData: TMatch[] | TMatchLong[];
 
-  public dictGroups: (IDictParticipants | undefined) | null;
+  public dictStages: (IDict | undefined) | null;
+  public dictStagesGrids: (IDict | undefined) | null;
 
   public currentYear: number | null;
   public currentWM: (TMatch[] | TMatchLong[]) | null;
+  public currentDictGroups: (IDictParticipants | undefined) | null;
+
+  public arrWMMatchesHTML: null | JQuery[];
 
   // ################################################################################
   // Static properties ##############################################################
@@ -45,10 +57,14 @@ export class Chart {
     this.objData = {};
     this.arrData = [];
 
-    this.dictGroups = null;
+    this.currentDictGroups = null;
+    this.dictStages = {};
+    this.dictStagesGrids = {};
 
     this.currentYear = null;
     this.currentWM = null;
+
+    this.arrWMMatchesHTML = null;
   }
 
   // ################################################################################
@@ -124,8 +140,13 @@ export class Chart {
   assign() {
     this.setYear(this.arrYears[0]);
     this.setWM(this.objData[this.currentYear!]);
+
     this.arrData = Object.values(this.objData).flat();
-    this.dictGroups = Match.getGroupsFor(this.currentWM!);
+    // @ts-ignore
+    this.arrWMMatchesHTML = $('.wm_match');
+
+    // Cannot reliably assign this here since World Cups can have consecutive group structures
+    // this.currentDictGroups = Match.getGroupsFor(this.currentWM!);
   }
 
   // ################################################################################
@@ -134,16 +155,44 @@ export class Chart {
       throw new Error('prepareData: Cannot prepare data without years');
     }
 
+    let id = 0;
+
     for (let i = 0; i < this.arrYears.length; i++) {
       const year = this.arrYears[i];
       let wm = this.objData[year];
 
-      for (let j = 0; j < this.objData[year].length; j++) {
+      for (let j = 0; j < wm.length; j++) {
         Match.mutGetHalftimeScoresOf(wm, j);
+
+        // Custom property for unique identification
+        wm[j].ID = id;
+
+        const {
+          arrStagesGroup: sG,
+          arrStagesKnockout: sK,
+        }: IObjStageGroupResult = funcGetAllWorldCupStagesOf(year);
+        this.dictStages![year] = {
+          arrStagesGroup: Match.getWorldCupStagesUsing(wm, sG),
+          arrStagesKnockout: Match.getWorldCupStagesUsing(wm, sK),
+        };
+
+        id++;
       }
+
+      this.dictStagesGrids![year] = {};
+      const ref = this.dictStagesGrids![year];
+      let arrSG = this.dictStages![year].arrStagesGroup;
+      let arrKG = this.dictStages![year].arrStagesKnockout;
+      ref.arrStagesGroup = arrSG
+        ? Match.getGridStatistics(arrSG, arrSG.length, EStageMode.GROUP)
+        : undefined;
+      ref.arrStagesKnockout = arrKG
+        ? Match.getGridStatistics(arrKG, arrKG.length, EStageMode.KNOCKOUT)
+        : undefined;
     }
 
-    this.assign();
+    // TODO: Check if assignments can be made later
+    // this.assign();
   }
 
   // ################################################################################
@@ -167,10 +216,12 @@ export class Chart {
           dictWMMatchDots[daysDiff] = {
             matches: [match],
             occurrences: 1,
+            ids: [match.ID],
           };
         } else {
           dictWMMatchDots[daysDiff].matches.push(match);
           dictWMMatchDots[daysDiff].occurrences++;
+          dictWMMatchDots[daysDiff].ids.push(match.ID);
         }
       }
 
@@ -211,6 +262,7 @@ export class Chart {
             dictWMMatchDots[i].matches[0][EMatchColumns.WEEKDAY] ?? NA
           );
           matchHTML.data('data-matches', dictWMMatchDots[i].matches);
+          matchHTML.data('data-ids', dictWMMatchDots[i].ids);
 
           wmHTML.append(matchHTML);
         }
@@ -221,15 +273,21 @@ export class Chart {
   }
 
   // ################################################################################
+  composeGrids() {}
+
+  // ################################################################################
   async render() {
     this.prerender();
     this.compose();
+    this.composeGrids();
 
     this.initEvents();
     this.initInteractions();
 
-    Chart.CHART_WIDTH = CHART_WIDTH_MIN;
+    this.assign();
 
-    $('.asides').css('translate', `-${CHART_WIDTH_OFFSET_MAX * 2}px`);
+    Chart.CHART_WIDTH = CHART_WIDTH_MIN;
+    // $('.asides').css('translate', `-${(1 / 22) * 100}%`);
+    // $('.asides').css('translate', `-${480}px`);
   }
 }

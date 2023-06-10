@@ -11,6 +11,7 @@ import { Match } from './classes/Match.ts';
 import { EMatchColumnsLong, ERound } from './enums.ts';
 import $ from 'jquery';
 import { Chart } from './classes/Chart.ts';
+import { IDictGridStatistics, IObjStageGroupResult } from './interfaces.ts';
 
 /**
  * `funcSortAscTGoal` sorts an array of goals ascending by minute in alphabetical order
@@ -29,17 +30,48 @@ function funcSortTGoalAsc(a: TGoal, b: TGoal) {
   return +a.minute - +b.minute;
 }
 
+// TODO: Check if this causes any corruptions in data
 function funcFilterScoreOfRE1({ minute }: TGoal) {
-  return +minute <= +RE1_LIMIT || Match.REG_RE1.test(minute);
+  return (
+    (+minute <= +RE1_LIMIT && !Match.REG_RE1_EXTRA_TIME.test(minute)) ||
+    Match.REG_RE1_EXTRA_TIME.test(minute)
+  );
 }
+// TODO: Check if this causes any corruptions in data
 function funcFilterScoreOfRE2({ minute }: TGoal) {
-  return +minute <= +RE2_LIMIT || Match.REG_RE2.test(minute);
+  return (
+    (+minute <= +RE2_LIMIT &&
+      !Match.REG_RE1_EXTRA_TIME.test(minute) &&
+      !Match.REG_RE2_EXTRA_TIME.test(minute)) ||
+    Match.REG_RE1_EXTRA_TIME.test(minute) ||
+    Match.REG_RE2_EXTRA_TIME.test(minute)
+  );
 }
+// TODO: Check if this causes any corruptions in data
 function funcFilterScoreOfET1({ minute }: TGoal) {
-  return +minute <= +ET1_LIMIT || Match.REG_ET1.test(minute);
+  return (
+    (+minute <= +ET1_LIMIT &&
+      !Match.REG_RE1_EXTRA_TIME.test(minute) &&
+      !Match.REG_RE2_EXTRA_TIME.test(minute) &&
+      !Match.REG_ET1_EXTRA_TIME.test(minute)) ||
+    Match.REG_RE1_EXTRA_TIME.test(minute) ||
+    Match.REG_RE2_EXTRA_TIME.test(minute) ||
+    Match.REG_ET1_EXTRA_TIME.test(minute)
+  );
 }
+// TODO: Check if this causes any corruptions in data
 function funcFilterScoreOfET2({ minute }: TGoal) {
-  return +minute <= +ET2_LIMIT || Match.REG_ET2.test(minute);
+  return (
+    (+minute <= +ET2_LIMIT &&
+      !Match.REG_RE1_EXTRA_TIME.test(minute) &&
+      !Match.REG_RE2_EXTRA_TIME.test(minute) &&
+      !Match.REG_ET1_EXTRA_TIME.test(minute) &&
+      !Match.REG_ET2_EXTRA_TIME.test(minute)) ||
+    Match.REG_RE1_EXTRA_TIME.test(minute) ||
+    Match.REG_RE2_EXTRA_TIME.test(minute) ||
+    Match.REG_ET1_EXTRA_TIME.test(minute) ||
+    Match.REG_ET2_EXTRA_TIME.test(minute)
+  );
 }
 
 function funcFilterByGroupStages(match: TMatch | TMatchLong) {
@@ -53,18 +85,6 @@ function funcFilterByGroupStages(match: TMatch | TMatchLong) {
       return match;
   }
 }
-const funcFilterByRoundOf16 = (match: TMatch | TMatchLong) =>
-    match[EMatchColumnsLong.ROUND] === ERound.ROUND_OF_16,
-  funcFilterByQuarterFinals = (match: TMatch | TMatchLong) =>
-    match[EMatchColumnsLong.ROUND] === ERound.QUARTER_FINALS,
-  funcFilterBySemiFinals = (match: TMatch | TMatchLong) =>
-    match[EMatchColumnsLong.ROUND] === ERound.SEMI_FINALS,
-  funcFilterByThirdPlace = (match: TMatch | TMatchLong) =>
-    match[EMatchColumnsLong.ROUND] === ERound.THIRD_PLACE_MATCH,
-  funcFilterByFinalStage = (match: TMatch | TMatchLong) =>
-    match[EMatchColumnsLong.ROUND] === ERound.FINAL_STAGE,
-  funcFilterByFinal = (match: TMatch | TMatchLong) =>
-    match[EMatchColumnsLong.ROUND] === ERound.FINAL;
 
 function funcGetScoreTypes(
   arrGoalsByHome: TGoal[],
@@ -148,6 +168,108 @@ function funcResizeWMMatchWidth() {
   }
 }
 
+function funcGetAllWorldCupStagesOf(year: number): IObjStageGroupResult {
+  switch (year) {
+    case 1930:
+      return {
+        arrStagesGroup: [ERound.GROUP_STAGE],
+        arrStagesKnockout: [ERound.SEMI_FINALS, ERound.FINAL],
+      };
+    case 1934:
+    case 1938:
+      return {
+        arrStagesKnockout: [
+          ERound.ROUND_OF_16,
+          ERound.QUARTER_FINALS,
+          ERound.SEMI_FINALS,
+          ERound.THIRD_PLACE_MATCH,
+          ERound.FINAL,
+        ],
+      };
+    case 1950:
+      return {
+        arrStagesGroup: [ERound.GROUP_STAGE, ERound.FINAL_STAGE],
+      };
+    case 1954:
+    case 1958:
+      return {
+        arrStagesGroup: [ERound.GROUP_STAGE, ERound.GROUP_STAGE_PLAYOFF],
+        arrStagesKnockout: [
+          ERound.QUARTER_FINALS,
+          ERound.SEMI_FINALS,
+          ERound.THIRD_PLACE_MATCH,
+          ERound.FINAL,
+        ],
+      };
+    case 1962:
+    case 1966:
+    case 1970:
+      return {
+        arrStagesGroup: [ERound.GROUP_STAGE],
+        arrStagesKnockout: [
+          ERound.QUARTER_FINALS,
+          ERound.SEMI_FINALS,
+          ERound.THIRD_PLACE_MATCH,
+          ERound.FINAL,
+        ],
+      };
+    case 1974:
+    case 1978:
+      return {
+        arrStagesGroup: [ERound.FIRST_ROUND, ERound.SECOND_ROUND],
+        arrStagesKnockout: [ERound.THIRD_PLACE_MATCH, ERound.FINAL],
+      };
+    case 1982:
+      return {
+        arrStagesGroup: [ERound.FIRST_GROUP_STAGE, ERound.SECOND_GROUP_STAGE],
+        arrStagesKnockout: [
+          ERound.SEMI_FINALS,
+          ERound.THIRD_PLACE_MATCH,
+          ERound.FINAL,
+        ],
+      };
+    case 1986:
+    case 1990:
+    case 1994:
+    case 1998:
+    case 2002:
+    case 2006:
+    case 2010:
+    case 2014:
+    case 2018:
+    case 2022:
+      return {
+        arrStagesGroup: [ERound.GROUP_STAGE],
+        arrStagesKnockout: [
+          ERound.ROUND_OF_16,
+          ERound.QUARTER_FINALS,
+          ERound.SEMI_FINALS,
+          ERound.THIRD_PLACE_MATCH,
+          ERound.FINAL,
+        ],
+      };
+    default:
+      return {};
+  }
+}
+
+function funcGenGridStageGroup(): IDictGridStatistics {
+  return {
+    home: 0,
+    draw: 0,
+    away: 0,
+  };
+}
+
+function funcGenGridStageKnockout(): IDictGridStatistics {
+  return {
+    home: 0,
+    away: 0,
+    et: 0,
+    p: 0,
+  };
+}
+
 export {
   funcSortTGoalAsc,
   funcFilterScoreOfRE1,
@@ -155,15 +277,12 @@ export {
   funcFilterScoreOfET1,
   funcFilterScoreOfET2,
   funcFilterByGroupStages,
-  funcFilterByRoundOf16,
-  funcFilterByQuarterFinals,
-  funcFilterBySemiFinals,
-  funcFilterByThirdPlace,
-  funcFilterByFinalStage,
-  funcFilterByFinal,
   funcGetScoreTypes,
   funcAddTo,
   funcAddToIf,
   funcResizeAppWidth,
   funcResizeWMMatchWidth,
+  funcGetAllWorldCupStagesOf,
+  funcGenGridStageGroup,
+  funcGenGridStageKnockout,
 };

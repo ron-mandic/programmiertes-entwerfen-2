@@ -51,6 +51,8 @@ type TMatchLong = TMatch & {
   'Score (RE2)': string;
   'Score (ET1)'?: string;
   'Score (ET2)'?: string;
+  ID?: number;
+  REPLAY?: TMatchLong;
 };
 
 type TScoreTypes = {
