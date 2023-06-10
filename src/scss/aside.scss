@@ -2,7 +2,7 @@
 
 aside {
   // TODO: Add an animation and the functionality (optional)
-  &::before {
+  /* &::before {
     content: attr(data-year);
     position: absolute;
     top: -2.75rem;
@@ -12,21 +12,40 @@ aside {
     font-size: 4rem;
     font-weight: bold;
     z-index: -1;
-  }
+  } */
+  width: v.$aside-width;
+  height: v.$app-height;
+
+  outline: v.$border;
+  border-radius: v.$border-radius;
+  font-family: "Roboto Condensed", sans-serif;
+
   &.min {
     display: none;
   }
 }
 
-#aside {
-  width: v.$aside-width;
-  height: v.$app-height;
+.asides {
+  height: 100%;
   background-color: lighten(v.$bg-color, 2);
-  padding: 2rem 0;
 
-  outline: v.$border;
-  border-radius: v.$border-radius;
-  font-family: "Roboto Condensed", sans-serif;
+  transition: all 1.375s cubic-bezier(0.65, 0.05, 0.36, 1);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.aside {
+  background-color: lighten(v.$bg-color, 2);
+  padding: 1.75rem 0 4.5rem;
+
+  width: v.$aside-width;
+  height: 100%;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   h1,
   h2,
@@ -122,6 +141,56 @@ aside {
       text-align: center;
 
       translate: -50% -50%;
+    }
+  }
+}
+
+footer {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  height: 4rem;
+
+  outline: v.$border-alpha;
+  border-radius: calc(#{v.$border-radius} * 0.5);
+  font-family: "Montserrat", sans-serif;
+  font-weight: bold;
+
+  backdrop-filter: blur(0.5rem);
+
+  .years {
+    height: 100%;
+    width: 100%;
+    padding: 2rem 2.5rem;
+    gap: 2.125rem;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .year {
+      transition: scale 0.125s cubic-bezier(0.89, 0.58, 0.57, 1);
+      background-color: transparent;
+
+      &:hover,
+      &:hover > label {
+        cursor: pointer;
+      }
+      & > input {
+        appearance: none;
+      }
+    }
+
+    .year:has(input) {
+      opacity: 0.5;
+      font-weight: 600;
+    }
+
+    .year:has(input:checked) {
+      scale: 1.875;
+      opacity: 1;
+      font-weight: bold;
     }
   }
 }

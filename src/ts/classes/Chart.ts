@@ -214,10 +214,8 @@ export class Chart {
 
           wmHTML.append(matchHTML);
         }
-
         daysDiffTemp = i;
       }
-
       dictWMMatchDots = {};
     }
   }
@@ -231,5 +229,7 @@ export class Chart {
     this.initInteractions();
 
     Chart.CHART_WIDTH = CHART_WIDTH_MIN;
+
+    $('.asides').css('translate', `-${CHART_WIDTH_OFFSET_MAX * 2}px`);
   }
 }
