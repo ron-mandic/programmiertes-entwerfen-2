@@ -1,10 +1,15 @@
-$app-width-min: 1280px;
+@use "sass:math";
+
+$app-width-min: 1440px;
 $app-width-max: 1920px;
 $app-height: 1080px;
-$app-aspect-ratio: 16 / 9;
+$app-aspect-ratio: math.div(16, 9);
+
+$aside-width: 480px;
 
 $line-height: 1.5rem;
 $month-padding: 0.75rem;
 
 $bg-color: #fff;
 $border: 1px solid #000000;
+$border-radius: 0.5rem;

@@ -1,6 +1,12 @@
 import { TGoal, TMatch, TMatchLong, TScoreTypes } from './types.ts';
 import { Type } from './classes/Type.ts';
-import {DATE_RANGE_IN_DAYS, ET1_LIMIT, ET2_LIMIT, RE1_LIMIT, RE2_LIMIT} from './constants.ts';
+import {
+  DATE_RANGE_IN_DAYS,
+  ET1_LIMIT,
+  ET2_LIMIT,
+  RE1_LIMIT,
+  RE2_LIMIT,
+} from './constants.ts';
 import { Match } from './classes/Match.ts';
 import { EMatchColumnsLong, ERound } from './enums.ts';
 import $ from 'jquery';
@@ -103,23 +109,24 @@ function funcResizeAppWidth(
 ) {
   e.preventDefault();
   // @ts-ignore
-  let deltaX = e.originalEvent.wheelDeltaX, deltaY = e.originalEvent.wheelDeltaY;
-  let offset = 480;
+  let deltaX = e.originalEvent?.wheelDeltaX,
+    // @ts-ignore
+    deltaY = e.originalEvent?.wheelDeltaY;
   let app = $('#app');
   let appInnerWidth = app.innerWidth()!;
 
+  if (Type.isUndefined(deltaX) || Type.isUndefined(deltaY)) return;
   if (deltaX) return;
 
   if (deltaY > 0) {
-    if (appInnerWidth < 1920 * 4) {
-      app.css('width', `+=${offset}px`);
+    if (appInnerWidth < Chart.CHART_WIDTH * 4) {
+      app.css('width', `+=${Chart.CHART_WIDTH_OFFSET}px`);
     }
   } else {
-    if (appInnerWidth > 1920) {
-      app.css('width', `-=${offset}px`);
-    }
-    if (appInnerWidth < 1920) {
-      app.css('width', `1920px`);
+    if (appInnerWidth > Chart.CHART_WIDTH) {
+      app.css('width', `-=${Chart.CHART_WIDTH_OFFSET}px`);
+    } else if (appInnerWidth < Chart.CHART_WIDTH) {
+      app.css('width', `${Chart.CHART_WIDTH}px`);
     }
   }
 }

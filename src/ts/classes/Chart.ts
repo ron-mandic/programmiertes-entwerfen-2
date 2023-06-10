@@ -3,11 +3,18 @@ import Http from 'axios';
 import Moment from 'moment';
 import { Match } from './Match.ts';
 import { TJQueryPlainObject, TMatch, TMatchLong } from '../types.ts';
-import {IDict, IDictParticipants} from '../interfaces.ts';
+import { IDict, IDictParticipants } from '../interfaces.ts';
 import { EMatchColumns, EUnitOfTime } from '../enums.ts';
-import {DATE_RANGE_IN_DAYS, NA, TOURNAMENT_START_LONG} from '../constants.ts';
+import {
+  CHART_WIDTH_MAX,
+  CHART_WIDTH_MIN,
+  CHART_WIDTH_OFFSET_MAX,
+  DATE_RANGE_IN_DAYS,
+  NA,
+  TOURNAMENT_START_LONG,
+} from '../constants.ts';
 import { funcResizeAppWidth, funcResizeWMMatchWidth } from '../functions.ts';
-import {Type} from "./Type.ts";
+import { Type } from './Type.ts';
 
 export class Chart {
   public arrYears: number[];
@@ -23,6 +30,9 @@ export class Chart {
   // ################################################################################
   // Static properties ##############################################################
   // ################################################################################
+  public static CHART_WIDTH = CHART_WIDTH_MAX;
+  // public static CHART_HEIGHT = 1080;
+  public static CHART_WIDTH_OFFSET = CHART_WIDTH_OFFSET_MAX;
   public static matchDotSizes: null | number = null;
 
   // ################################################################################
@@ -93,7 +103,7 @@ export class Chart {
   // ################################################################################
   // TODO: Document
   initInteractions() {
-    $('main').bind('mousewheel', funcResizeAppWidth);
+    $('.container').bind('mousewheel', funcResizeAppWidth);
   }
 
   // ################################################################################
@@ -156,7 +166,7 @@ export class Chart {
         if (!dictWMMatchDots[daysDiff]) {
           dictWMMatchDots[daysDiff] = {
             matches: [match],
-            occurrences: 1
+            occurrences: 1,
           };
         } else {
           dictWMMatchDots[daysDiff].matches.push(match);
@@ -167,11 +177,13 @@ export class Chart {
       for (let i = 0; i < DATE_RANGE_IN_DAYS; i++) {
         if (!dictWMMatchDots[i]) {
           wmHTML.append(
-            Chart.createDot( {
-              left: `${(i / (DATE_RANGE_IN_DAYS)) * 100}%`,
-              width: `${Chart.matchDotSizes * 0.75}px`,
-              height: `${Chart.matchDotSizes * 0.75}px`,
-            }, '<div class="wm_match__empty"></div>')
+            Chart.createDot(
+              {
+                left: `${(i / DATE_RANGE_IN_DAYS) * 100}%`,
+                width: `${Chart.matchDotSizes * 0.75}px`,
+              },
+              '<div class="wm_match__empty"></div>'
+            )
           );
           continue;
         }
@@ -179,7 +191,7 @@ export class Chart {
         if (Type.isNull(daysDiffTemp) || daysDiffTemp !== i) {
           const matchHTML = Chart.createDot(
             {
-              left: `${(i / (DATE_RANGE_IN_DAYS)) * 100}%`,
+              left: `${(i / DATE_RANGE_IN_DAYS) * 100}%`,
               width: `${Chart.matchDotSizes * 0.75}px`,
               height: `${Chart.matchDotSizes * 0.75}px`,
             },
@@ -190,8 +202,14 @@ export class Chart {
             matchHTML.attr('data-occurrences', dictWMMatchDots[i].occurrences);
           }
 
-          matchHTML.attr('data-date', dictWMMatchDots[i].matches[0][EMatchColumns.DATE] ?? NA);
-          matchHTML.attr('data-weekday', dictWMMatchDots[i].matches[0][EMatchColumns.WEEKDAY] ?? NA);
+          matchHTML.attr(
+            'data-date',
+            dictWMMatchDots[i].matches[0][EMatchColumns.DATE] ?? NA
+          );
+          matchHTML.attr(
+            'data-weekday',
+            dictWMMatchDots[i].matches[0][EMatchColumns.WEEKDAY] ?? NA
+          );
           matchHTML.data('data-matches', dictWMMatchDots[i].matches);
 
           wmHTML.append(matchHTML);
@@ -211,5 +229,7 @@ export class Chart {
 
     this.initEvents();
     this.initInteractions();
+
+    Chart.CHART_WIDTH = CHART_WIDTH_MIN;
   }
 }

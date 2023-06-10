@@ -1,3 +1,12 @@
+@keyframes main-slide-in {
+  0% {
+    translate: 0 50%;
+  }
+  100% {
+    translate: 0 -100%;
+  }
+}
+
 @keyframes wm_match-pulse {
   0% {
     scale: 1;
