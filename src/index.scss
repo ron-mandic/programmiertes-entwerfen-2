@@ -7,3 +7,14 @@
 @use "scss/main";
 @use "scss/wm";
 @use "scss/aside";
+
+.window {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 82.44px;
+  height: 100%;
+  background-color: rgba(255, 0, 0, 0.25);
+  z-index: -1;
+}

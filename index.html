@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="src/index.scss" lang="scss" />
     <title>Document</title>
   </head>
@@ -12,7 +12,6 @@
     <main
       class="is-parent is-flex"
       data-title="FIFA World Cup &#183; 1930-2022"
-      role="main"
     >
       <div class="container scroll-x no-scroll-y min">
         <div id="app" class="no-scroll-y min">
@@ -250,16 +249,17 @@
           </div>
         </div>
       </div>
-      <aside
-        class="is-flex is-parent is-masked"
-        data-view="details"
-        role="complementary"
-        data-year="1930"
-      >
-        <div class="asides is-flex is-parent">
+
+      <aside class="is-flex is-parent is-masked">
+        <div class="asides is-flex is-parent is-debugging">
           <div class="aside no-scroll-x scroll-y" data-year="1930">
-            <div class="wrapper-s">
-              <h1>1930</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1930_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1930</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -267,7 +267,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -278,16 +278,29 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1934">
-            <div class="wrapper-s">
-              <h1>1934</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1934_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1934</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
                 first and second rounds as well as group stage play-offs.
               </p>
             </div>
-            <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-m">
+              <div class="info no-select is-masked">
+                <p class="animated">
+                  Throughout the tournament, matches were played in knockout
+                  mode. Unlike the last World Cup in 1930, there were no group
+                  matches.
+                </p>
+              </div>
+            </div>
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -298,16 +311,29 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1938">
-            <div class="wrapper-s">
-              <h1>1938</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1938_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1938</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
                 first and second rounds as well as group stage play-offs.
               </p>
             </div>
-            <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-m">
+              <div class="info no-select is-masked">
+                <p class="animated">
+                  Like its predecessor, the 1938 World Cup was played in a
+                  knockout format. Unlike the World Cup in 1930, there were no
+                  group matches.
+                </p>
+              </div>
+            </div>
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -318,8 +344,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1950">
-            <div class="wrapper-s">
-              <h1>1950</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1950_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1950</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -327,19 +358,34 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
                 matches up to the final match.
               </p>
             </div>
-            <div class="wrapper-m"></div>
+            <div class="wrapper-m">
+              <div class="info no-select is-masked">
+                <p class="animated">
+                  The tournament was not played in knockout mode, but in two
+                  group phases. In the first group phase, four groups of four
+                  were to be formed. In the second group stage, the first-placed
+                  teams played each other for the world championship title. This
+                  mode was unique in the history of the World Cup.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1954">
-            <div class="wrapper-s">
-              <h1>1954</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1954_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1954</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -347,7 +393,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -358,8 +404,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1958">
-            <div class="wrapper-s">
-              <h1>1958</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1958_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1958</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -367,7 +418,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -378,8 +429,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1962">
-            <div class="wrapper-s">
-              <h1>1962</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1962_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1962</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -387,7 +443,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -398,8 +454,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1966">
-            <div class="wrapper-s">
-              <h1>1966</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1966_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1966</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -407,7 +468,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -418,8 +479,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1970">
-            <div class="wrapper-s">
-              <h1>1970</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1970_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1970</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -427,7 +493,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -438,8 +504,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1974">
-            <div class="wrapper-s">
-              <h1>1974</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1974_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1974</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -447,7 +518,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -458,8 +529,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1978">
-            <div class="wrapper-s">
-              <h1>1978</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1978_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1978</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -467,7 +543,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -478,8 +554,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1982">
-            <div class="wrapper-s">
-              <h1>1982</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1982_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1982</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -487,7 +568,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -498,8 +579,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1986">
-            <div class="wrapper-s">
-              <h1>1986</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1986_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1986</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -507,7 +593,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -518,8 +604,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1990">
-            <div class="wrapper-s">
-              <h1>1990</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1990_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1990</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -527,7 +618,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -538,8 +629,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1994">
-            <div class="wrapper-s">
-              <h1>1994</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1994_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1994</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -547,7 +643,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -558,8 +654,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="1998">
-            <div class="wrapper-s">
-              <h1>1998</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/1998_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">1998</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -567,7 +668,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -578,8 +679,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="2002">
-            <div class="wrapper-s">
-              <h1>2002</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/2002_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">2002</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -587,7 +693,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -598,8 +704,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="2006">
-            <div class="wrapper-s">
-              <h1>2006</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/2006_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">2006</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -607,7 +718,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -618,8 +729,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="2010">
-            <div class="wrapper-s">
-              <h1>2010</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/2010_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">2010</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -627,7 +743,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -638,8 +754,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="2014">
-            <div class="wrapper-s">
-              <h1>2014</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/2014_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">2014</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -647,7 +768,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -658,8 +779,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="2018">
-            <div class="wrapper-s">
-              <h1>2018</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/2018_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">2018</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -667,7 +793,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -678,8 +804,13 @@
           </div>
 
           <div class="aside no-scroll-x scroll-y" data-year="2022">
-            <div class="wrapper-s">
-              <h1>2022</h1>
+            <div class="wrapper-s no-select">
+              <a
+                href="https://en.wikipedia.org/wiki/2022_FIFA_World_Cup"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><h1 class="is-parent">2022</h1></a
+              >
               <h2>Group stage</h2>
               <p>
                 Group stages may also include first and second group stages,
@@ -687,7 +818,7 @@
               </p>
             </div>
             <div class="wrapper-m"></div>
-            <div class="wrapper-s">
+            <div class="wrapper-s no-select">
               <h2>Knockout stages</h2>
               <p>
                 The knockout stages of the World Cup include the round of 16
@@ -697,9 +828,10 @@
             <div class="wrapper-m"></div>
           </div>
         </div>
-
         <footer>
-          <div class="years is-flex fs-c scroll-x no-scroll-y no-select">
+          <div
+            class="years is-flex fs-c scroll-x no-scroll-y no-select is-parent"
+          >
             <div class="year is-flex">
               <label for="i-1930">1930</label>
               <input
@@ -795,6 +927,7 @@
               <input id="i-2022" type="radio" name="year" value="2022" />
             </div>
           </div>
+          <div class="window"></div>
         </footer>
       </aside>
     </main>

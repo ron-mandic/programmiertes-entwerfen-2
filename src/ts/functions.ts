@@ -11,7 +11,11 @@ import { Match } from './classes/Match.ts';
 import { EMatchColumnsLong, ERound } from './enums.ts';
 import $ from 'jquery';
 import { Chart } from './classes/Chart.ts';
-import { IDictGridStatistics, IObjStageGroupResult } from './interfaces.ts';
+import {
+  IDict,
+  IDictGridStatistics,
+  IObjStageGroupResult,
+} from './interfaces.ts';
 
 /**
  * `funcSortAscTGoal` sorts an array of goals ascending by minute in alphabetical order
@@ -270,6 +274,96 @@ function funcGenGridStageKnockout(): IDictGridStatistics {
   };
 }
 
+function funcComposeGridStageGroup(
+  wrapper: JQuery,
+  dict: IDict,
+  absAmount: number
+) {
+  if (Type.isUndefined(dict)) {
+    funcComposePlaceholder(wrapper);
+    return;
+  }
+
+  let arrHalftimeScores = Object.keys(dict).sort();
+  let length = arrHalftimeScores.length;
+
+  let grid = funcCreateGrid(false);
+  let n = 0;
+
+  for (let i = 0; i < length * 4 - 1; i++) {
+    let gridTile;
+
+    if (i % 4 === 0) {
+      gridTile = funcCreateGridTile(arrHalftimeScores[n]);
+      n++;
+    } else {
+      gridTile = funcCreateGridTile();
+    }
+
+    if (!i) gridTile.attr('data-col-label', 'H');
+    if (i === 1) gridTile.attr('data-col-label', 'D');
+    if (i === 2) gridTile.attr('data-col-label', 'A');
+
+    grid.append(gridTile);
+  }
+
+  wrapper.append(grid);
+}
+
+function funcComposeGridStageKnockout(
+  wrapper: JQuery,
+  dict: IDict,
+  absAmount: number
+) {
+  if (Type.isUndefined(dict)) {
+    funcComposePlaceholder(wrapper);
+    return;
+  }
+
+  let arrHalftimeScores = Object.keys(dict).sort();
+  let length = arrHalftimeScores.length;
+
+  let grid = funcCreateGrid(true);
+  let n = 0;
+
+  for (let i = 0; i < length * 4; i++) {
+    let gridTile;
+
+    if (i % 4 === 0) {
+      gridTile = funcCreateGridTile(arrHalftimeScores[n]);
+      n++;
+    } else {
+      gridTile = funcCreateGridTile();
+    }
+
+    if (!i) gridTile.attr('data-col-label', 'H');
+    if (i === 1) gridTile.attr('data-col-label', 'A');
+    if (i === 2) gridTile.attr('data-col-label', 'ET');
+    if (i === 3) gridTile.attr('data-col-label', 'P');
+
+    grid.append(gridTile);
+  }
+
+  wrapper.append(grid);
+}
+
+function funcComposePlaceholder(wrapper: JQuery) {
+  wrapper.removeClass('wrapper-m').addClass('wrapper-s');
+}
+
+function funcCreateGrid(withFourthColumn: boolean) {
+  return !withFourthColumn
+    ? $('<div class="grid col-4 is-grid no-col-4"></div>')
+    : $('<div class="grid col-4 is-grid"></div>');
+}
+
+function funcCreateGridTile(rowLabel?: string, colLabel?: string) {
+  const gridTile = $("<div class='grid_tile col-4 is-parent'></div>");
+  if (rowLabel) gridTile.attr('data-row-label', rowLabel);
+  if (colLabel) gridTile.attr('data-col-label', colLabel);
+  return gridTile;
+}
+
 export {
   funcSortTGoalAsc,
   funcFilterScoreOfRE1,
@@ -285,4 +379,9 @@ export {
   funcGetAllWorldCupStagesOf,
   funcGenGridStageGroup,
   funcGenGridStageKnockout,
+  funcComposeGridStageGroup,
+  funcComposeGridStageKnockout,
+  funcComposePlaceholder,
+  funcCreateGrid,
+  funcCreateGridTile,
 };

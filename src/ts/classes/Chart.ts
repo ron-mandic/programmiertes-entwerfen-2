@@ -18,6 +18,8 @@ import {
   TOURNAMENT_START_LONG,
 } from '../constants.ts';
 import {
+  funcComposeGridStageGroup,
+  funcComposeGridStageKnockout,
   funcGetAllWorldCupStagesOf,
   funcResizeAppWidth,
   funcResizeWMMatchWidth,
@@ -183,12 +185,14 @@ export class Chart {
       const ref = this.dictStagesGrids![year];
       let arrSG = this.dictStages![year].arrStagesGroup;
       let arrKG = this.dictStages![year].arrStagesKnockout;
-      ref.arrStagesGroup = arrSG
+      ref.objStagesGroup = arrSG
         ? Match.getGridStatistics(arrSG, arrSG.length, EStageMode.GROUP)
         : undefined;
-      ref.arrStagesKnockout = arrKG
+      ref.objStagesKnockout = arrKG
         ? Match.getGridStatistics(arrKG, arrKG.length, EStageMode.KNOCKOUT)
         : undefined;
+      ref.stagesGroupLength = arrSG ? arrSG.length : 0;
+      ref.stagesKnockoutLength = arrKG ? arrKG.length : 0;
     }
 
     // TODO: Check if assignments can be made later
@@ -273,7 +277,32 @@ export class Chart {
   }
 
   // ################################################################################
-  composeGrids() {}
+  /**
+   * Status: Doing
+   */
+  composeGrids() {
+    if (!this.dictStagesGrids)
+      throw new Error('composeGrids: dictStagesGrids is null');
+
+    for (let year in this.dictStagesGrids!) {
+      const yearGrids = this.dictStagesGrids![year];
+      const {
+        objStagesGroup: objSG,
+        objStagesKnockout: objSK,
+        stagesGroupLength: sGL,
+        stagesKnockoutLength: sKL,
+      } = yearGrids;
+
+      const asideHTML = $(`.aside[data-year="${year}"]`);
+      const [wrapperA, wrapperB] = asideHTML.find('.wrapper-m');
+
+      if (!wrapperA || !wrapperB)
+        throw new Error('composeGrids: wrapperA or wrapperB is null');
+
+      funcComposeGridStageGroup($(wrapperA)!, objSG, sGL);
+      funcComposeGridStageKnockout($(wrapperB)!, objSK, sKL);
+    }
+  }
 
   // ################################################################################
   async render() {
@@ -288,6 +317,12 @@ export class Chart {
 
     Chart.CHART_WIDTH = CHART_WIDTH_MIN;
     // $('.asides').css('translate', `-${(1 / 22) * 100}%`);
-    // $('.asides').css('translate', `-${480}px`);
+
+    let index = 0;
+    $('.asides').css('translate', `-${480 * index}px`);
+    console.log(
+      this.dictStagesGrids![this.arrYears[index]].objStagesGroup!,
+      this.dictStagesGrids![this.arrYears[index]].objStagesKnockout!
+    );
   }
 }
