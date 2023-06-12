@@ -21,6 +21,8 @@ import {
   funcComposeGridStageGroup,
   funcComposeGridStageKnockout,
   funcGetAllWorldCupStagesOf,
+  funcGetFuncFromGradient,
+  funcGetScrollAmountBy,
   funcResizeAppWidth,
   funcResizeWMMatchWidth,
 } from '../functions.ts';
@@ -48,6 +50,8 @@ export class Chart {
   // public static CHART_HEIGHT = 1080;
   public static CHART_WIDTH_OFFSET = CHART_WIDTH_OFFSET_MAX;
   public static matchDotSizes: null | number = null;
+
+  public static IS_EXPANDED = false;
 
   // ################################################################################
   // Constructor ####################################################################
@@ -116,6 +120,35 @@ export class Chart {
     });
 
     new ResizeObserver(funcResizeWMMatchWidth).observe($('#app')![0]);
+
+    let asides = $('.asides'),
+      years = $('.years'),
+      yearsHTML = years[0];
+
+    $('.year > label').each(function () {
+      $(this).on('click', function () {
+        let i = +$(this).parent().attr('data-i')!;
+        asides.css('translate', `-${((i - 1) / 22) * 100}%`);
+
+        yearsHTML.scrollTo({
+          left: funcGetScrollAmountBy(i) - 10,
+          top: 0,
+          behavior: 'smooth',
+        });
+      });
+    });
+
+    years.bind('mousewheel', function (event) {
+      event.preventDefault();
+    });
+
+    // if I press D on my keyboard, I want to see the data
+    $(document).on('keydown', function (event) {
+      if (event.key === 'd') {
+        Chart.IS_EXPANDED = !Chart.IS_EXPANDED;
+        console.log(Chart.IS_EXPANDED ? 'expanded' : 'not expanded');
+      }
+    });
   }
 
   // ################################################################################
@@ -278,7 +311,10 @@ export class Chart {
 
   // ################################################################################
   /**
-   * Status: Doing
+   * Retrieves the wrapper elements for the grid and passes the arguments to subordinate functions
+   * which then actually compose each individual grid.
+   *
+   * Status: Done
    */
   composeGrids() {
     if (!this.dictStagesGrids)
@@ -295,12 +331,15 @@ export class Chart {
 
       const asideHTML = $(`.aside[data-year="${year}"]`);
       const [wrapperA, wrapperB] = asideHTML.find('.wrapper-m');
+      const colorStart = '#e2fdff', // #d9ed92, #e0aaff, #c7f9cc, #e2fdff
+        colorEnd = '#5465ff'; // #d9ed92, #10002b, #22577a, #5465ff
+      const funcGetColor = funcGetFuncFromGradient(colorStart, colorEnd, 0, 1);
 
       if (!wrapperA || !wrapperB)
         throw new Error('composeGrids: wrapperA or wrapperB is null');
 
-      funcComposeGridStageGroup($(wrapperA)!, objSG, sGL);
-      funcComposeGridStageKnockout($(wrapperB)!, objSK, sKL);
+      funcComposeGridStageGroup($(wrapperA)!, objSG, funcGetColor, sGL);
+      funcComposeGridStageKnockout($(wrapperB)!, objSK, funcGetColor, sKL);
     }
   }
 
@@ -316,13 +355,5 @@ export class Chart {
     this.assign();
 
     Chart.CHART_WIDTH = CHART_WIDTH_MIN;
-    // $('.asides').css('translate', `-${(1 / 22) * 100}%`);
-
-    let index = 0;
-    $('.asides').css('translate', `-${480 * index}px`);
-    console.log(
-      this.dictStagesGrids![this.arrYears[index]].objStagesGroup!,
-      this.dictStagesGrids![this.arrYears[index]].objStagesKnockout!
-    );
   }
 }

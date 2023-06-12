@@ -133,7 +133,6 @@ aside {
 
   column-gap: 0.5rem;
   row-gap: 0.5rem;
-  // grid-template-rows: repeat(5, 1fr);
 
   &.col-3 {
     grid-template-columns: repeat(3, 1fr);
@@ -156,6 +155,12 @@ aside {
     aspect-ratio: 1;
     background-color: #eee;
     border-radius: v.$border-radius;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    user-select: none;
 
     &.col-3:nth-child(1)::after,
     &.col-3:nth-child(2)::after,
@@ -191,6 +196,46 @@ aside {
 
       translate: -50% -50%;
     }
+
+    &:has(span.invalid) {
+      cursor: not-allowed;
+    }
+    &:has(span.valid.et),
+    &:has(span.valid.p) {
+      background-color: #f5f5f5 !important;
+    }
+
+    span {
+      display: block;
+      font-size: 1.25rem;
+      font-weight: 400;
+
+      &.invalid {
+        font-size: 0.9rem;
+        opacity: 0.25;
+      }
+
+      &.invalid.et,
+      &.invalid.p {
+        opacity: 0.25;
+        font-weight: 400;
+      }
+
+      &:not(.p):not(.et).valid::after {
+        content: "(" attr(data-score) ")";
+        position: absolute;
+        left: 0.375rem;
+        bottom: 0.375rem;
+
+        font-size: 75%;
+      }
+
+      &.valid.et,
+      &.valid.p {
+        font-size: 1.25rem;
+        font-weight: 400;
+      }
+    }
   }
 }
 
@@ -214,7 +259,7 @@ footer {
     padding: 2rem 12.75rem 2rem 12.875rem;
     gap: 2.5rem; // jumps right to right most label
 
-    &:not(.is-debugging)::-webkit-scrollbar {
+    &::-webkit-scrollbar {
       display: none;
     }
 
