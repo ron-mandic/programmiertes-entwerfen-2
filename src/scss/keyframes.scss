@@ -1,9 +1,27 @@
-@keyframes main-slide-in {
+@keyframes main-slide-out-before {
   0% {
     translate: 0 50%;
   }
   100% {
     translate: 0 -100%;
+  }
+}
+
+@keyframes main-slide-out-after {
+  0% {
+    translate: 100% -100%;
+  }
+  100% {
+    translate: 100% 100%;
+  }
+}
+
+@keyframes main-slide-out-after {
+  0% {
+    translate: 100% 100%;
+  }
+  100% {
+    translate: 100% -100%;
   }
 }
 

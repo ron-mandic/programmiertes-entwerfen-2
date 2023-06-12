@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import Http from 'axios';
 import Moment from 'moment';
+import Anime from 'animejs';
 import { Match } from './Match.ts';
 import { TJQueryPlainObject, TMatch, TMatchLong } from '../types.ts';
 import {
@@ -43,15 +44,20 @@ export class Chart {
 
   public arrWMMatchesHTML: null | JQuery[];
 
+  public objAsideState: {
+    current: null | JQuery;
+    previous: null | JQuery;
+  };
+  public objAsideStateScrollTops: { [key: number]: number };
+
   // ################################################################################
   // Static properties ##############################################################
   // ################################################################################
+  public static IS_EXPANDED = false;
   public static CHART_WIDTH = CHART_WIDTH_MAX;
   // public static CHART_HEIGHT = 1080;
   public static CHART_WIDTH_OFFSET = CHART_WIDTH_OFFSET_MAX;
   public static matchDotSizes: null | number = null;
-
-  public static IS_EXPANDED = false;
 
   // ################################################################################
   // Constructor ####################################################################
@@ -71,6 +77,36 @@ export class Chart {
     this.currentWM = null;
 
     this.arrWMMatchesHTML = null;
+
+    this.objAsideState = {
+      current: null,
+      previous: null,
+    };
+
+    this.objAsideStateScrollTops = {
+      1930: 0,
+      1934: 0,
+      1938: 0,
+      1950: 0,
+      1954: 0,
+      1958: 0,
+      1962: 0,
+      1966: 0,
+      1970: 0,
+      1974: 0,
+      1978: 0,
+      1982: 0,
+      1986: 0,
+      1990: 0,
+      1994: 0,
+      1998: 0,
+      2002: 0,
+      2006: 0,
+      2010: 0,
+      2014: 0,
+      2018: 0,
+      2022: 0,
+    };
   }
 
   // ################################################################################
@@ -125,10 +161,79 @@ export class Chart {
       years = $('.years'),
       yearsHTML = years[0];
 
-    $('.year > label').each(function () {
-      $(this).on('click', function () {
+    let chart = this;
+
+    $('.year > label').each(function (_, element) {
+      $(element).on('click', function () {
+        let main = $('main');
         let i = +$(this).parent().attr('data-i')!;
+        let year = $(this).parent().find('input[type="radio"]').val()!;
         asides.css('translate', `-${((i - 1) / 22) * 100}%`);
+
+        chart.setYear(+year);
+        chart.setWM(chart.objData[+year]);
+
+        // ########################################
+
+        if (chart.objAsideState.previous) {
+          chart.objAsideStateScrollTops[+year!] = <number>(
+            chart.objAsideState.previous!.scrollTop()
+          );
+        }
+        console.log(chart.objAsideStateScrollTops);
+
+        // ########################################
+
+        if (
+          chart.objAsideStateScrollTops[+year!] === 0 &&
+          main.hasClass('out')
+        ) {
+          main.removeClass('out');
+        } else if (
+          chart.objAsideStateScrollTops[+year!] > 0 &&
+          !main.hasClass('out')
+        ) {
+          main.addClass('out');
+        }
+
+        let previousYear = chart.objAsideState.previous?.attr('data-year')!;
+        if (
+          chart.objAsideState.previous &&
+          chart.objAsideStateScrollTops[+previousYear] !== 0
+        ) {
+          let thisAsideHTML = $(`.aside[data-year="${previousYear}"]`)[0];
+          thisAsideHTML.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+          });
+          main.removeClass('out'); // Even though the scroll triggered event takes care of this
+        }
+
+        if (chart.objAsideStateScrollTops[+year] !== 0) {
+          let thisAsideHTML = $(`.aside[data-year="${year}"]`)[0];
+          thisAsideHTML.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+          });
+          main.removeClass('out'); // Even though the scroll triggered event takes care of this
+        }
+
+        // ########################################
+
+        if (chart.objAsideState.current!.attr('data-year') !== year) {
+          chart.objAsideState.previous = chart.objAsideState.current;
+          chart.objAsideState.current = $(`.aside[data-year="${year}"]`);
+        }
+
+        /* console.log(
+          chart.objAsideState.previous?.attr('data-year'),
+          chart.objAsideState.current!.attr('data-year')
+        ); */
+
+        main.attr('data-title-after', `${year}`);
+
+        // console.log(chart.currentYear);
+        // console.log(chart.currentWM);
 
         yearsHTML.scrollTo({
           left: funcGetScrollAmountBy(i) - 10,
@@ -142,11 +247,27 @@ export class Chart {
       event.preventDefault();
     });
 
-    // if I press D on my keyboard, I want to see the data
     $(document).on('keydown', function (event) {
+      let app = $('#app'),
+        container = $('.container'),
+        aside = $('aside');
+
       if (event.key === 'd') {
-        Chart.IS_EXPANDED = !Chart.IS_EXPANDED;
-        console.log(Chart.IS_EXPANDED ? 'expanded' : 'not expanded');
+        if (Chart.CHART_WIDTH === CHART_WIDTH_MAX) {
+          // If the chart takes up whole screen
+          Chart.CHART_WIDTH = CHART_WIDTH_MIN;
+
+          app.css('width', Chart.CHART_WIDTH).addClass('min');
+          container.css('width', Chart.CHART_WIDTH).addClass('min');
+          aside.show();
+        } else {
+          // If the chart is in the middle of the screen
+          Chart.CHART_WIDTH = CHART_WIDTH_MAX;
+
+          app.css('width', Chart.CHART_WIDTH).removeClass('min');
+          container.css('width', Chart.CHART_WIDTH).removeClass('min');
+          aside.hide();
+        }
       }
     });
   }
@@ -155,6 +276,39 @@ export class Chart {
   // TODO: Document
   initInteractions() {
     $('.container').bind('mousewheel', funcResizeAppWidth);
+
+    let chart = this;
+
+    $('.aside').each(function (_, element) {
+      $(element).scroll(function () {
+        let main = $('main');
+        let thisAside = $(this);
+        let scrollTop = thisAside.scrollTop()!;
+
+        let year = +thisAside.attr('data-year')!;
+        chart.objAsideStateScrollTops[year] = scrollTop;
+
+        if (scrollTop > 75) {
+          if (!main.hasClass('out')) main.addClass('out');
+        } else {
+          if (main.hasClass('out')) main.removeClass('out');
+        }
+      });
+    });
+  }
+
+  initAnimations() {
+    Anime({
+      targets: Array.from($('.wm_match')),
+      translateX: [Anime.random(-1000, 500), 0],
+      opacity: [0.075, 1],
+      easing: 'easeOutQuad',
+      duration: 200,
+      delay: Anime.stagger(15, { start: 0, from: 'center' }),
+      complete: () => {
+        $('.container').addClass('ready');
+      },
+    });
   }
 
   // ################################################################################
@@ -179,6 +333,8 @@ export class Chart {
     this.arrData = Object.values(this.objData).flat();
     // @ts-ignore
     this.arrWMMatchesHTML = $('.wm_match');
+
+    this.objAsideState.current = $('.aside').first();
 
     // Cannot reliably assign this here since World Cups can have consecutive group structures
     // this.currentDictGroups = Match.getGroupsFor(this.currentWM!);
@@ -349,11 +505,10 @@ export class Chart {
     this.compose();
     this.composeGrids();
 
-    this.initEvents();
-    this.initInteractions();
-
     this.assign();
 
-    Chart.CHART_WIDTH = CHART_WIDTH_MIN;
+    this.initEvents();
+    this.initInteractions();
+    this.initAnimations();
   }
 }

@@ -2,19 +2,48 @@
 
 main {
   // gap: 0.5rem;
-}
+  &::before {
+    content: attr(data-title-before);
+    position: absolute;
+    padding: 0 0 0.75rem 0.75rem;
+    font-family: "Montserrat", sans-serif;
+    font-size: 2.5rem;
+    font-weight: bold;
+    animation: main-slide-out-before 2s cubic-bezier(0.89, 0.58, 0.57, 1);
 
-main::after {
-  content: attr(data-title);
-  position: absolute;
-  padding: 0 0 0.75rem 0.75rem;
-  font-family: "Montserrat", sans-serif;
-  font-size: 2.5rem;
-  font-weight: bold;
-  animation: main-slide-in 2s cubic-bezier(0.89, 0.58, 0.57, 1);
+    translate: 0 -100%;
+    z-index: -1;
+  }
+  &::after {
+    content: attr(data-title-after);
+    position: absolute;
+    top: 0;
+    right: v.$aside-width;
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
 
-  translate: 0 -100%;
-  z-index: -1;
+    padding-left: 3.25rem;
+
+    font-size: 4rem;
+    width: min-content;
+    color: #000;
+
+    display: block;
+
+    z-index: -1;
+  }
+  &::after {
+    translate: 100% 100%;
+    scale: 1 2.25;
+    transition: translate 0.25s cubic-bezier(0.89, 0.58, 0.57, 1),
+      scale 0.125s ease-in;
+  }
+  &.out::after {
+    translate: 100% -100%;
+    scale: 1 1;
+    transition: translate 0.375s cubic-bezier(0.89, 0.58, 0.57, 1),
+      scale 0.5s ease-in-out;
+  }
 }
 
 .container {
@@ -25,10 +54,18 @@ main::after {
 
   background-color: darken(v.$bg-color, 5);
   outline: v.$border;
+  border-radius: v.$border-radius;
 
-  border-top-left-radius: v.$border-radius;
-  border-bottom-left-radius: v.$border-radius;
-  transition: all 0.5s ease-in-out;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  .ready::-webkit-scrollbar {
+    display: block;
+  }
+
+  &.min {
+    border-radius: v.$border-radius 0 0 v.$border-radius;
+  }
 
   z-index: 2;
 }
@@ -52,9 +89,4 @@ main::after {
       opacity: 1;
     }
   }
-}
-
-.container.min,
-#app.min {
-  width: v.$app-width-min;
 }

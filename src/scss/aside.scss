@@ -21,13 +21,9 @@ aside {
   border-bottom-right-radius: v.$border-radius;
   font-family: "Roboto Condensed", sans-serif;
 
-  transition: all 0.5s ease-in-out;
-
   &.min {
     display: none;
     border-radius: v.$border-radius;
-
-    transition: all 0.5s ease-in-out;
   }
 }
 
@@ -48,6 +44,16 @@ aside {
 
   width: v.$aside-width;
   height: 100%;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 2rem;
+    background-image: linear-gradient(to top, #fafafa, transparent);
+  }
 
   &::-webkit-scrollbar {
     display: none;
