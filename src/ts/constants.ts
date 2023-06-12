@@ -41,6 +41,31 @@ const WorldCupYears = [
   2022 /* https://de.wikipedia.org/wiki/Fu%C3%9Fball-Weltmeisterschaft_2022 */,
 ];
 
+const WorldCupYearsIndices = {
+  1930: 1,
+  1934: 2,
+  1938: 3,
+  1950: 4,
+  1954: 5,
+  1958: 6,
+  1962: 7,
+  1966: 8,
+  1970: 9,
+  1974: 10,
+  1978: 11,
+  1982: 12,
+  1986: 13,
+  1990: 14,
+  1994: 15,
+  1998: 16,
+  2002: 17,
+  2006: 18,
+  2010: 19,
+  2014: 20,
+  2018: 21,
+  2022: 22,
+};
+
 const MatchColumns = {
   YEAR: 'Year',
   DATE: 'Date',
@@ -115,6 +140,7 @@ export {
   EXIT_FAILURE,
   EXIT_SUCCESS,
   WorldCupYears,
+  WorldCupYearsIndices,
   MatchColumns,
   RE1_LIMIT,
   RE2_LIMIT,

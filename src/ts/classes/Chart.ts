@@ -24,8 +24,13 @@ import {
   funcGetAllWorldCupStagesOf,
   funcGetFuncFromGradient,
   funcGetScrollAmountBy,
+  funcGetYearFrom,
+  funcIsAnyOfThoseClasses,
+  funcMakeDraggable,
+  funcPopulateModal,
   funcResizeAppWidth,
   funcResizeWMMatchWidth,
+  funcSimulateMouseClick,
 } from '../functions.ts';
 import { Type } from './Type.ts';
 
@@ -49,6 +54,8 @@ export class Chart {
     previous: null | JQuery;
   };
   public objAsideStateScrollTops: { [key: number]: number };
+
+  public currentlySelectedMatch: null | JQuery;
 
   // ################################################################################
   // Static properties ##############################################################
@@ -107,6 +114,8 @@ export class Chart {
       2018: 0,
       2022: 0,
     };
+
+    this.currentlySelectedMatch = null;
   }
 
   // ################################################################################
@@ -180,7 +189,6 @@ export class Chart {
             chart.objAsideState.previous!.scrollTop()
           );
         }
-        console.log(chart.objAsideStateScrollTops);
 
         // ########################################
 
@@ -220,10 +228,23 @@ export class Chart {
 
         // ########################################
 
+        // 1a)
+        $(`.wm[data-year='${+year}']`).addClass('on');
+
+        // ########################################
+
         if (chart.objAsideState.current!.attr('data-year') !== year) {
           chart.objAsideState.previous = chart.objAsideState.current;
           chart.objAsideState.current = $(`.aside[data-year="${year}"]`);
         }
+
+        // ########################################
+
+        // 1b)
+        previousYear = chart.objAsideState.previous?.attr('data-year')!;
+        $(`.wm[data-year='${+previousYear!}']`).removeClass('on');
+
+        // ########################################
 
         /* console.log(
           chart.objAsideState.previous?.attr('data-year'),
@@ -241,6 +262,19 @@ export class Chart {
           behavior: 'smooth',
         });
       });
+    });
+
+    $('.wm_match').on('click', function (event) {
+      const wmMatchDot = $(this);
+      let year = +wmMatchDot.attr('data-date')!.substring(0, 4);
+      let wmModal = $('.wm_modal');
+
+      funcSimulateMouseClick(chart, year);
+      funcPopulateModal(chart, wmModal, wmMatchDot, event);
+
+      wmMatchDot.focus();
+      chart.currentlySelectedMatch = wmMatchDot;
+      // console.log(chart.currentlySelectedMatch);
     });
 
     years.bind('mousewheel', function (event) {
@@ -268,6 +302,36 @@ export class Chart {
           container.css('width', Chart.CHART_WIDTH).removeClass('min');
           aside.hide();
         }
+
+        if (chart.currentYear !== 1930) {
+          // Only visual indicator
+          // 1a)
+          $(`.wm.on`).removeClass('on');
+          // 1b)
+          $(`.wm[data-year='${chart.currentYear}']`).addClass('on');
+
+          const index = funcGetYearFrom(chart.currentYear!);
+          // a) Simulate mouse click
+          $(`.year[data-i="${index}"] > label`).click();
+          // b) Change title
+          $('main').attr('data-title-after', `${chart.currentYear!}`);
+          // c) Trigger footer area
+          $('.years')[0].scrollTo({
+            left: funcGetScrollAmountBy(index) - 10,
+            top: 0,
+            behavior: 'smooth',
+          });
+          // d) Trigger the slider
+          $('.asides').css('translate', `-${((index - 1) / 22) * 100}%`);
+        }
+
+        if (chart.currentlySelectedMatch) {
+          chart.currentlySelectedMatch.focus();
+        }
+
+        if (!chart.objAsideState.previous) {
+          $(`.wm[data-year='${chart.currentYear}']`).addClass('on');
+        }
       }
     });
   }
@@ -294,6 +358,21 @@ export class Chart {
           if (main.hasClass('out')) main.removeClass('out');
         }
       });
+    });
+
+    let wmModal = $('.wm_modal');
+    const wmModalContent = wmModal.find('.content')!;
+    const wmModalTitle = wmModal.find('h2')!;
+    // If I click outside the modal, the content should reset itself
+    window.addEventListener('click', function (e) {
+      if (
+        !document.querySelector('.wm_modal')!.contains(e.target) &&
+        !e.target.classList.contains('wm_match')
+      ) {
+        chart.currentlySelectedMatch = null;
+        wmModalTitle.removeClass('on');
+        wmModalContent.empty();
+      }
     });
   }
 
@@ -510,5 +589,8 @@ export class Chart {
     this.initEvents();
     this.initInteractions();
     this.initAnimations();
+
+    let wmModal = $('.wm_modal');
+    funcMakeDraggable(wmModal[0], $('#app')[0]);
   }
 }

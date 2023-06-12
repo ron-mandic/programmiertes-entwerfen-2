@@ -95,3 +95,46 @@
     transform: translateX(-100%);
   }
 }
+
+@keyframes wm-shimmer {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.75;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  95% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// Credits: https://codepen.io/JCLee/pen/dyPejGV
+@keyframes wm-skeleton {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes wm-modal-after {
+  0% {
+    content: "Please select a dot";
+  }
+  33% {
+    content: "Please select a dot .";
+  }
+  66% {
+    content: "Please select a dot . .";
+  }
+  100% {
+    content: "Please select a dot . . .";
+  }
+}

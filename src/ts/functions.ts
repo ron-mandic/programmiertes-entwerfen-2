@@ -1,11 +1,14 @@
 import { TGoal, TMatch, TMatchLong, TScoreTypes } from './types.ts';
 import { Type } from './classes/Type.ts';
 import {
+  CHART_WIDTH_MAX,
+  CHART_WIDTH_MIN,
   DATE_RANGE_IN_DAYS,
   ET1_LIMIT,
   ET2_LIMIT,
   RE1_LIMIT,
   RE2_LIMIT,
+  WorldCupYearsIndices,
 } from './constants.ts';
 import { Match } from './classes/Match.ts';
 import { EMatchColumnsLong, ERound, EStageMode } from './enums.ts';
@@ -17,6 +20,7 @@ import {
   IObjStageGroupResult,
 } from './interfaces.ts';
 import Chroma from 'chroma-js';
+import Moment from 'moment/moment';
 
 /**
  * `funcSortAscTGoal` sorts an array of goals ascending by minute in alphabetical order
@@ -132,13 +136,33 @@ function funcAddToIf(
 function funcResizeAppWidth(
   e: JQuery.TriggeredEvent<HTMLElement, undefined, HTMLElement, HTMLElement>
 ) {
+  let target = e.target as HTMLElement;
+  if (
+    funcIsAnyOfThoseClasses(target, [
+      'wm_modal',
+      'wm_modal_title',
+      'content',
+      'wm_model_match',
+    ])
+  ) {
+    e.preventDefault(); // Prevents overflow in the minified window of the app
+    return; // Prevents the main view from scrolling over the modal
+  }
+
+  // console.log(target);
   e.preventDefault();
+
   // @ts-ignore
   let deltaX = e.originalEvent?.wheelDeltaX,
     // @ts-ignore
     deltaY = e.originalEvent?.wheelDeltaY;
   let app = $('#app');
   let appInnerWidth = app.innerWidth()!;
+
+  if (deltaX) {
+    e.preventDefault();
+    return;
+  }
 
   if (Type.isUndefined(deltaX) || Type.isUndefined(deltaY)) return;
   if (deltaX) return;
@@ -581,6 +605,183 @@ function funcPaintGrid(
   }
 }
 
+function funcSimulateMouseClick(chart: Chart, year: number) {
+  if (Chart.CHART_WIDTH === CHART_WIDTH_MAX) {
+    // Only visual indicator
+    if (!chart.objAsideState.previous)
+      $(`.wm[data-year='${year}']`).addClass('on');
+    if (chart.objAsideState.current!.attr('data-year') !== `${year}`) {
+      // Only visual indicator
+      // 1a)
+      $(`.wm.on`).removeClass('on');
+      // 1b)
+      $(`.wm[data-year='${year}']`).addClass('on');
+    }
+
+    if (chart.objAsideState.current!.attr('data-year') !== `${year}`) {
+      chart.objAsideState.previous = chart.objAsideState.current;
+      chart.objAsideState.current = $(`.aside[data-year="${year}"]`);
+    }
+    chart.setYear(year);
+    chart.setWM(chart.objData[+year]);
+
+    // console.log('Helllllllllooooooo', `currentYear = ${chart.currentYear}`);
+    return;
+  }
+
+  // ##############################
+  // Only visual indicator
+  if (!chart.objAsideState.previous) {
+    $(`.wm[data-year='${year}']`).addClass('on');
+  }
+  if (chart.objAsideState.current!.attr('data-year') !== `${year}`) {
+    // Only visual indicator
+    // 1a)
+    $(`.wm.on`).removeClass('on');
+    // 1b)
+    $(`.wm[data-year='${year}']`).addClass('on');
+  }
+
+  if (chart.objAsideState.current!.attr('data-year') !== `${year}`) {
+    chart.objAsideState.previous = chart.objAsideState.current;
+    chart.objAsideState.current = $(`.aside[data-year="${year}"]`);
+  }
+  chart.setYear(year);
+  chart.setWM(chart.objData[+year]);
+
+  // ##############################
+
+  const index = funcGetYearFrom(year);
+  // a) Simulate mouse click
+  $(`.year[data-i="${index}"] > label`).click();
+  // b) Change title
+  $('main').attr('data-title-after', `${year}`);
+  // c) Trigger footer area
+  $('.years')[0].scrollTo({
+    left: funcGetScrollAmountBy(index) - 10,
+    top: 0,
+    behavior: 'smooth',
+  });
+  // d) Trigger the slider
+  $('.asides').css('translate', `-${((index - 1) / 22) * 100}%`);
+}
+
+function funcGetYearFrom(index: number) {
+  return WorldCupYearsIndices[index as keyof typeof WorldCupYearsIndices];
+}
+
+function funcMakeDraggable(element: HTMLElement, parent: HTMLElement) {
+  let pos1 = 0,
+    pos2 = 0,
+    pos3 = 0,
+    pos4 = 0;
+  if (document.getElementById(element.id + 'header')) {
+    // if present, the header is where you move the DIV from:
+    document.getElementById(element.id + 'header')!.onmousedown = dragMouseDown;
+  } else {
+    // otherwise, move the DIV from anywhere inside the DIV:
+    element.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e: DragEvent) {
+    const { width: widthMax, height: heightMax } =
+      parent.getBoundingClientRect();
+    const { width: widthElement, height: heightElement } =
+      element.getBoundingClientRect();
+
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+
+    let absTop = element.offsetTop - pos2;
+    let absLeft = element.offsetLeft - pos1;
+
+    if (absLeft >= 0 && absLeft <= widthMax - widthElement) {
+      element.style.left = absLeft + 'px';
+    }
+    // Upon switching to the narrower chart width
+    /* if (Chart.CHART_WIDTH === CHART_WIDTH_MIN && absLeft > CHART_WIDTH_MAX) {
+      element.style.left = CHART_WIDTH_MIN - widthElement + 'px';
+    } */
+    if (absTop >= 0 && absTop <= heightMax - heightElement) {
+      element.style.top = absTop + 'px';
+    }
+
+    // element.style.left = element.offsetLeft - pos1 + 'px';
+    // element.style.top = element.offsetTop - pos2 + 'px';
+    $(element).css('cursor', 'grab');
+  }
+
+  function closeDragElement() {
+    // stop moving when mouse button is released:
+    document.onmouseup = null;
+    document.onmousemove = null;
+    $(element).css('cursor', 'auto');
+  }
+}
+
+function funcPopulateModal(
+  chart: Chart,
+  wmModal: JQuery,
+  wmMatchDot: JQuery,
+  event: JQuery.ClickEvent<HTMLElement>
+) {
+  const wmModalContent = wmModal.find('.content')!;
+  const wmModalTitle = wmModal.find('h2')!;
+
+  // If clicked somewhere else, the modal should reset itself
+  /* if (
+    !event.target.classList.contains('wm_match') &&
+    !funcIsAnyOfThoseClasses(event.target, [
+      'wm_modal',
+      'wm_modal_title',
+      'content',
+      'wm_model_match',
+    ])
+  ) {
+    chart.currentlySelectedMatch?.blur();
+    wmModalTitle.removeClass('on');
+    wmModalContent.empty();
+    return;
+  } */
+
+  const date = wmMatchDot.attr('data-date')!;
+  const arrWMMatches = wmMatchDot.data().dataMatches as TMatchLong[];
+
+  // if (chart.currentlySelectedMatch?.is(wmMatchDot)) return;
+
+  wmModalContent.empty();
+  wmModalTitle.addClass('on');
+  wmModalTitle.attr('data-date', Moment(date).format('dddd, MMMM Do'));
+  wmModalTitle.attr('data-matches', arrWMMatches.length);
+
+  for (let i = 0; i < arrWMMatches.length; i++) {
+    const wmModalEntry = $('<div class="wm_modal_match is-flex c-c"></div>');
+    wmModalEntry.text(arrWMMatches[i][EMatchColumnsLong.SCORE_LONG]);
+    wmModalContent.append(wmModalEntry);
+  }
+}
+
+function funcIsAnyOfThoseClasses(target: HTMLElement, classes: string[]) {
+  return classes.some((c) => target.classList.contains(c));
+}
+
 export {
   funcSortTGoalAsc,
   funcFilterScoreOfRE1,
@@ -603,4 +804,9 @@ export {
   funcCreateGridTile,
   funcGetScrollAmountBy,
   funcGetFuncFromGradient,
+  funcSimulateMouseClick,
+  funcGetYearFrom,
+  funcMakeDraggable,
+  funcPopulateModal,
+  funcIsAnyOfThoseClasses,
 };

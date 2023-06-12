@@ -1,3 +1,5 @@
+import { WorldCupYears } from './constants.ts';
+
 enum EConsoleStyles {
   SUCCESS = 'background-color: #44aa6b; color: white; padding: .25rem .5rem; border-radius: .25rem; font-style: italic;',
   INFO = 'background-color: #446bcc; padding: .25rem .5rem; border-radius: .25rem; font-style: italic;',

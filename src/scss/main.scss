@@ -90,3 +90,84 @@ main {
     }
   }
 }
+
+.wm_modal {
+  position: absolute;
+  top: calc(
+    (#{v.$app-height} - 810px) / 2
+  ); // no translate allowed to not mess up the drag event
+  right: 1rem;
+  width: v.$aside-width;
+  height: 810px;
+
+  background-color: #fff;
+  border-radius: v.$border-radius;
+  outline: v.$border;
+
+  z-index: 1000;
+
+  h2 {
+    position: relative;
+    width: 100%;
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    line-height: 2.5rem;
+    font-family: "Montserrat", sans-serif;
+    color: #000;
+
+    &::before,
+    &::after {
+      position: absolute;
+      translate: 0 -50%;
+      right: 2rem;
+      font-size: 55%;
+    }
+    &::after {
+      content: "Please select data";
+      top: 50%;
+      left: 62%;
+      white-space: nowrap;
+      animation: wm-modal-after 3s linear infinite forwards;
+    }
+
+    &.on::before {
+      content: attr(data-date);
+      top: calc(50% - 0.75rem);
+    }
+    &.on::after {
+      animation: none;
+      white-space: normal;
+      translate: 0 -50%;
+      left: unset;
+      right: 2rem;
+      font-size: 55%;
+
+      content: attr(data-matches) " Match(es)";
+      top: calc(50% + 0.75rem);
+    }
+  }
+
+  .content {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 3rem - 2.5rem);
+    grid-template-rows: repeat(8, 1fr); // max 8 matches a day
+
+    max-height: 100%;
+    overflow-y: auto; // you can only scroll on Firefox
+  }
+
+  .wm_modal_match {
+    width: 100%;
+    height: calc(100% / 8);
+    padding: 0.5rem 2rem;
+
+    &:nth-child(even) {
+      background-color: #fafafa;
+    }
+    &:nth-child(odd) {
+      background-color: #fff;
+    }
+  }
+}
