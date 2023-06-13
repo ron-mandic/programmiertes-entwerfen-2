@@ -6,12 +6,13 @@ import {
   DATE_RANGE_IN_DAYS,
   ET1_LIMIT,
   ET2_LIMIT,
+  NA,
   RE1_LIMIT,
   RE2_LIMIT,
   WorldCupYearsIndices,
 } from './constants.ts';
 import { Match } from './classes/Match.ts';
-import { EMatchColumnsLong, ERound, EStageMode } from './enums.ts';
+import { EMatchColumnsLong, ERound, EStageMode, ESymbol } from './enums.ts';
 import $ from 'jquery';
 import { Chart } from './classes/Chart.ts';
 import {
@@ -146,7 +147,7 @@ function funcResizeAppWidth(
     ])
   ) {
     e.preventDefault(); // Prevents overflow in the minified window of the app
-    return; // Prevents the main view from scrolling over the modal
+    return false; // Prevents the main view from scrolling over the modal
   }
 
   // console.log(target);
@@ -766,20 +767,146 @@ function funcPopulateModal(
 
   // if (chart.currentlySelectedMatch?.is(wmMatchDot)) return;
 
+  let host = arrWMMatches[0][EMatchColumnsLong.HOST];
+  if (host.startsWith('Korea Republic')) host = 'Korea, Japan';
+
   wmModalContent.empty();
   wmModalTitle.addClass('on');
-  wmModalTitle.attr('data-date', Moment(date).format('dddd, MMMM Do'));
+  wmModalTitle.attr(
+    'data-date',
+    `${host} • ${Moment(date).format('dddd, MMMM Do YYYY')}`
+  );
   wmModalTitle.attr('data-matches', arrWMMatches.length);
 
   for (let i = 0; i < arrWMMatches.length; i++) {
-    const wmModalEntry = $('<div class="wm_modal_match is-flex c-c"></div>');
-    wmModalEntry.text(arrWMMatches[i][EMatchColumnsLong.SCORE_LONG]);
+    const wmModalEntry = funcCreateModalEntry(arrWMMatches[i]);
     wmModalContent.append(wmModalEntry);
   }
 }
 
+function funcCreateModalEntry(element: TMatchLong): JQuery {
+  const el = $('<div class="wm_modal_match is-flex c-c is-parent"></div>');
+  const col1 = $('<div class="col-1 is-flex"></div>');
+  const col2 = $('<div class="col-2 is-flex"></div>');
+
+  // col-1
+  const home = element[EMatchColumnsLong.HOME];
+  const away = element[EMatchColumnsLong.AWAY];
+  const round = element[EMatchColumnsLong.ROUND];
+  const teamHome = $('<p class="team-home"></p>')
+    .attr('data-label', '(H)')
+    .text(home);
+  const teamAway = $('<p class="team-away"></p>')
+    .attr('data-label', '(A)')
+    .text(away);
+  const teams = $('<div class="teams"></div>');
+  teams.append(teamHome, teamAway);
+  const stage = $('<p class="stage"></p>').text(round);
+  col1.append(teams, stage);
+
+  // col-2
+  const scoreResultString = funcDetermineResultString(element);
+  const attendance = funcFormat(
+    +element[EMatchColumnsLong.ATTENDANCE],
+    ESymbol.COMMA
+  );
+  const score = $('<p class="score"></p>').text(scoreResultString);
+  const attendanceEl = $('<p class="attendance"></p>').text(attendance);
+  col2.append(score, attendanceEl);
+
+  // End
+  el.append(col1, col2);
+  return el;
+}
+
+function funcDetermineResultString(element: TMatchLong): string {
+  const LABEL_ET = 'a.e.t',
+    LABEL_P = 'p.s';
+
+  const score = element[EMatchColumnsLong.SCORE_ET2];
+  const scoreChronology = [
+    element[EMatchColumnsLong.SCORE_ET1],
+    element[EMatchColumnsLong.SCORE_RE2],
+    element[EMatchColumnsLong.SCORE_RE1],
+  ];
+
+  const scoreRE1 = element[EMatchColumnsLong.SCORE_RE1];
+  const scoreRE2 = element[EMatchColumnsLong.SCORE_RE2];
+  const scoreET1 = element[EMatchColumnsLong.SCORE_ET1];
+  const scoreET2 = element[EMatchColumnsLong.SCORE_ET2];
+
+  let score00 = `0${ESymbol.HYPHEN_LONG}0`;
+
+  const homePenaltyGoals = element[EMatchColumnsLong.SCORE_HOME_PENALTY];
+  const awayPenaltyGoals = element[EMatchColumnsLong.SCORE_AWAY_PENALTY];
+
+  // Guard clause #1
+  if (
+    (!Type.isUndefined(scoreET1) && Type.isUndefined(scoreET2)) ||
+    (Type.isUndefined(scoreET1) && !Type.isUndefined(scoreET2))
+  ) {
+    throw new Error(
+      'funcDetermineResultString: Score ET1 and ET2 must be both defined or both undefined'
+    );
+  }
+  // Guard clause #2
+  if (
+    (!Type.isUndefined(homePenaltyGoals) &&
+      Type.isUndefined(awayPenaltyGoals)) ||
+    (Type.isUndefined(homePenaltyGoals) && !Type.isUndefined(awayPenaltyGoals))
+  ) {
+    throw new Error(
+      'funcDetermineResultString: Score ET1 and ET2 must be both defined or both undefined'
+    );
+  }
+
+  // i.e. 1-1 (4-3)
+  if (Type.isUndefined(scoreET1) && Type.isUndefined(scoreET2)) {
+    return scoreRE2 !== scoreRE1
+      ? `${scoreRE2} (${scoreRE1})`
+      : scoreRE2 === score00 && scoreRE1 === score00
+      ? scoreRE2
+      : `${scoreRE2} (${scoreRE1})`;
+  }
+
+  // if penalty shootout
+  let strPenalty = `${homePenaltyGoals}${ESymbol.HYPHEN_LONG}${awayPenaltyGoals} ${LABEL_P}`;
+  let strScore = `${scoreET2} ${LABEL_ET}`;
+  let strScoreSuffix = funcEvaluateScore(score, scoreChronology);
+  if (
+    Type.isUndefined(homePenaltyGoals) &&
+    Type.isUndefined(awayPenaltyGoals)
+  ) {
+    return scoreChronology.every((s) => s === score)
+      ? `${strScore}`
+      : `${strScore} ${strScoreSuffix}`;
+  } else {
+    return scoreChronology.every((s) => s === score)
+      ? `${strScore}, ${strPenalty}`
+      : `${strScore} ${strScoreSuffix}, ${strPenalty}`;
+  }
+}
+
+function funcEvaluateScore(score: string, scoreChronology: string[]): string {
+  if (
+    !scoreChronology.every((s) => !Type.isUndefined(s)) &&
+    scoreChronology.length !== 3
+  )
+    return NA;
+
+  let scoreRE2 = scoreChronology[1],
+    scoreRE1 = scoreChronology[2];
+  return scoreChronology.every((s) => s === score)
+    ? score
+    : `(${scoreRE2}, ${scoreRE1})`;
+}
+
 function funcIsAnyOfThoseClasses(target: HTMLElement, classes: string[]) {
   return classes.some((c) => target.classList.contains(c));
+}
+
+function funcFormat(num: number, delimiter: string) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
 }
 
 export {
@@ -808,5 +935,8 @@ export {
   funcGetYearFrom,
   funcMakeDraggable,
   funcPopulateModal,
+  funcCreateModalEntry,
+  funcEvaluateScore,
+  funcFormat,
   funcIsAnyOfThoseClasses,
 };

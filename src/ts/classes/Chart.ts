@@ -9,7 +9,7 @@ import {
   IDictParticipants,
   IObjStageGroupResult,
 } from '../interfaces.ts';
-import { EMatchColumns, EStageMode, EUnitOfTime } from '../enums.ts';
+import { EMatchColumns, EStageMode, ESymbol, EUnitOfTime } from '../enums.ts';
 import {
   CHART_WIDTH_MAX,
   CHART_WIDTH_MIN,
@@ -21,6 +21,7 @@ import {
 import {
   funcComposeGridStageGroup,
   funcComposeGridStageKnockout,
+  funcFormat,
   funcGetAllWorldCupStagesOf,
   funcGetFuncFromGradient,
   funcGetScrollAmountBy,
@@ -590,7 +591,6 @@ export class Chart {
     this.initInteractions();
     this.initAnimations();
 
-    let wmModal = $('.wm_modal');
-    funcMakeDraggable(wmModal[0], $('#app')[0]);
+    funcMakeDraggable($('.wm_modal')[0], $('#app')[0]);
   }
 }

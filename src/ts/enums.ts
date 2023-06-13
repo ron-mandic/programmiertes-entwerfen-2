@@ -10,6 +10,7 @@ enum EConsoleStyles {
 enum ESymbol {
   HYPHEN = '-',
   HYPHEN_LONG = '–',
+  COMMA = ',',
 }
 
 enum EMatchColumns {
