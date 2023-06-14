@@ -9,7 +9,12 @@ import {
   IDictParticipants,
   IObjStageGroupResult,
 } from '../interfaces.ts';
-import { EMatchColumns, EStageMode, ESymbol, EUnitOfTime } from '../enums.ts';
+import {
+  EMatchColumns,
+  EMatchColumnsLong,
+  EStageMode,
+  EUnitOfTime,
+} from '../enums.ts';
 import {
   CHART_WIDTH_MAX,
   CHART_WIDTH_MIN,
@@ -19,14 +24,13 @@ import {
   TOURNAMENT_START_LONG,
 } from '../constants.ts';
 import {
+  funcActivateSelect,
   funcComposeGridStageGroup,
   funcComposeGridStageKnockout,
-  funcFormat,
   funcGetAllWorldCupStagesOf,
   funcGetFuncFromGradient,
   funcGetScrollAmountBy,
   funcGetYearFrom,
-  funcIsAnyOfThoseClasses,
   funcMakeDraggable,
   funcPopulateModal,
   funcResizeAppWidth,
@@ -66,6 +70,10 @@ export class Chart {
   // public static CHART_HEIGHT = 1080;
   public static CHART_WIDTH_OFFSET = CHART_WIDTH_OFFSET_MAX;
   public static matchDotSizes: null | number = null;
+
+  public static filterStates: {
+    [key: string]: null | string;
+  } = { round: '', host: '', weekday: '' };
 
   // ################################################################################
   // Constructor ####################################################################
@@ -367,7 +375,9 @@ export class Chart {
     // If I click outside the modal, the content should reset itself
     window.addEventListener('click', function (e) {
       if (
+        // @ts-ignore
         !document.querySelector('.wm_modal')!.contains(e.target) &&
+        // @ts-ignore
         !e.target.classList.contains('wm_match')
       ) {
         chart.currentlySelectedMatch = null;
@@ -375,6 +385,8 @@ export class Chart {
         wmModalContent.empty();
       }
     });
+
+    funcActivateSelect();
   }
 
   initAnimations() {
@@ -534,6 +546,21 @@ export class Chart {
             'data-weekday',
             dictWMMatchDots[i].matches[0][EMatchColumns.WEEKDAY] ?? NA
           );
+          matchHTML.attr(
+            'data-rounds',
+            [
+              ...new Set(
+                dictWMMatchDots[i].matches.map(
+                  (m: TMatch | TMatchLong) => m[EMatchColumnsLong.ROUND]
+                )
+              ),
+            ].join(';') // , due to 'Korea Republic, Japan' not allowed
+          );
+          matchHTML.attr(
+            'data-host',
+            dictWMMatchDots[i].matches[0][EMatchColumns.HOST] ?? NA
+          );
+
           matchHTML.data('data-matches', dictWMMatchDots[i].matches);
           matchHTML.data('data-ids', dictWMMatchDots[i].ids);
 

@@ -1,0 +1,94 @@
+@use "variables" as v;
+
+.custom-select-group {
+  position: absolute;
+  top: calc(100% + 0.875rem);
+  z-index: 1000;
+
+  flex-direction: row;
+
+  & > * + * {
+    margin-left: 0.75rem;
+  }
+}
+
+.custom-select {
+  font-family: "Roboto Condensed", sans-serif;
+}
+
+.custom-select select {
+  display: none; /*hide original SELECT element: */
+}
+
+.select-selected {
+  white-space: nowrap;
+  width: 205.4px;
+}
+
+.select-selected,
+.select-items {
+  background-color: #fff;
+  outline: v.$border;
+}
+
+.select-selected:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+}
+
+.select-items div,
+.select-selected {
+  padding: 0.5rem 1rem 0.5rem 0.75rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  border-radius: 0.45rem;
+}
+
+.select-selected.select-arrow-active {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top-color: transparent;
+
+  & + .select-items {
+    border-bottom-color: transparent;
+  }
+}
+
+.select-items {
+  border-top-left-radius: v.$border-radius;
+  border-top-right-radius: v.$border-radius;
+
+  width: 205.4px;
+
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+
+  div {
+    white-space: nowrap;
+    border-radius: 0;
+    &:first-child {
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+.select-hide {
+  display: none;
+}
+
+.select-items div:hover,
+.same-as-selected {
+  background-color: #f1f1f1;
+}
+
+.same-as-selected {
+  background-color: rgba(80, 80, 222, 0.25);
+  &:hover {
+    background-color: rgba(80, 80, 222, 0.375) !important;
+  }
+}

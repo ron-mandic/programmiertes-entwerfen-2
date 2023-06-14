@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="src/index.scss" lang="scss" />
     <title>Document</title>
   </head>
-  <body class="is-flex c-c no-scroll-x">
+  <body class="is-flex c-c no-scroll-x no-scroll-y">
     <main
       class="is-parent is-flex"
       data-title-before="FIFA World Cup &#183; 1930-2022"
@@ -248,7 +248,7 @@
               <div class="month_divider"></div>
             </div>
           </div>
-          <div class="wm_modal">
+          <div class="wm_modal is-masked">
             <h2 class="wm_modal_title" data-date="N/A" data-matches="N/A">
               Matches
             </h2>
@@ -937,6 +937,114 @@
           <div class="window"></div>
         </footer>
       </aside>
+      <div class="custom-select-group is-flex">
+        <div class="custom-select is-parent">
+          <label>
+            <select id="select-round">
+              <option data-prop="round" value="0">Round</option>
+              <option data-prop="round" value="*">Round: All</option>
+              <option data-prop="round" value="Group stage">
+                Round: Group stage
+              </option>
+              <option data-prop="round" value="Group stage play-off">
+                Round: Group stage play-off
+              </option>
+              <option data-prop="round" value="First group stage">
+                Round: First group stage
+              </option>
+              <option data-prop="round" value="Second group stage">
+                Round: Second group stage
+              </option>
+              <option data-prop="round" value="First round">
+                Round: First round
+              </option>
+              <option data-prop="round" value="Second round">
+                Round: Second round
+              </option>
+              <option data-prop="round" value="Round of 16">
+                Round: Round of 16
+              </option>
+              <option data-prop="round" value="Quarter-finals">
+                Round: Quarter-finals
+              </option>
+              <option data-prop="round" value="Semi-finals">
+                Round: Semi-finals
+              </option>
+              <option data-prop="round" value="Third-place match">
+                Round: Third-place match
+              </option>
+              <option data-prop="round" value="Final stage">
+                Round: Final stage
+              </option>
+              <option data-prop="round" value="Final">Round: Final</option>
+            </select>
+          </label>
+        </div>
+        <div class="custom-select is-parent">
+          <label>
+            <select id="select-host">
+              <option data-prop="host" value="0">Host</option>
+              <option data-prop="host" value="*">Host: All</option>
+              <option data-prop="host" value="Uruguay">Host: Uruguay</option>
+              <option data-prop="host" value="Italy">Host: Italy</option>
+              <option data-prop="host" value="France">Host: France</option>
+              <option data-prop="host" value="Brazil">Host: Brazil</option>
+              <option data-prop="host" value="Switzerland">
+                Host: Switzerland
+              </option>
+              <option data-prop="host" value="Sweden">Host: Sweden</option>
+              <option data-prop="host" value="Chile">Host: Chile</option>
+              <option data-prop="host" value="England">Host: England</option>
+              <option data-prop="host" value="Mexico">Host: Mexico</option>
+              <option data-prop="host" value="Germany">Host: Germany</option>
+              <option data-prop="host" value="Argentina">
+                Host: Argentina
+              </option>
+              <option data-prop="host" value="Spain">Host: Spain</option>
+              <option data-prop="host" value="United States">
+                Host: United States
+              </option>
+              <option data-prop="host" value="Korea Republic, Japan">
+                Host: Korea Republic, Japan
+              </option>
+              <option data-prop="host" value="South Africa">
+                Host: South Africa
+              </option>
+              <option data-prop="host" value="Russia">Host: Russia</option>
+              <option data-prop="host" value="Qatar">Host: Qatar</option>
+            </select>
+          </label>
+        </div>
+        <div class="custom-select is-parent">
+          <label>
+            <select id="select-weekday">
+              <option data-prop="weekday" value="0">Weekday</option>
+              <option data-prop="weekday" value="*">Weekday: All</option>
+              <option data-prop="weekday" value="Monday">
+                Weekday: Monday
+              </option>
+              <option data-prop="weekday" value="Tuesday">
+                Weekday: Tuesday
+              </option>
+              <option data-prop="weekday" value="Wednesday">
+                Weekday: Wednesday
+              </option>
+              <option data-prop="weekday" value="Thursday">
+                Weekday: Thursday
+              </option>
+              <option data-prop="weekday" value="Friday">
+                Weekday: Friday
+              </option>
+              <option data-prop="weekday" value="Saturday">
+                Weekday: Saturday
+              </option>
+              <option data-prop="weekday" value="Sunday">
+                Weekday: Sunday
+              </option>
+            </select>
+          </label>
+        </div>
+      </div>
     </main>
 
     <script type="module" src="/src/index.ts"></script>

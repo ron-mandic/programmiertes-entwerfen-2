@@ -167,6 +167,15 @@
   }
 }
 
+.filtered {
+  border: none !important;
+  background-color: #000000 !important;
+  opacity: 0.1 !important;
+  pointer-events: none !important;
+
+  transition: background-color 0.55s cubic-bezier(0.5, 0.98, 0.14, 1.07);
+}
+
 .wm_match[data-occurrences] {
   &:not(.inactive)::before {
     content: attr(data-occurrences);

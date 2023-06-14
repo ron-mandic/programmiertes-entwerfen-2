@@ -79,7 +79,8 @@ main {
 
   @container (min-width: 5280px) {
     .wm_match[data-occurrences]::before {
-      top: 55%;
+      top: 53.5%;
+      left: 50%;
       color: #eeeeee;
       line-height: 100%;
       font-size: 67.5%;
@@ -92,7 +93,7 @@ main {
 }
 
 .wm_modal {
-  position: absolute;
+  position: fixed;
   top: calc(
     (#{v.$app-height} - 810px) / 2
   ); // no translate allowed to not mess up the drag event
@@ -104,7 +105,14 @@ main {
   border-radius: v.$border-radius;
   outline: v.$border;
 
+  transition: box-shadow 0.5s ease-in;
+
   z-index: 1000;
+
+  // when dragged
+  &:active {
+    transition: box-shadow 0.125s ease-in-out;
+  }
 
   h2 {
     position: relative;
@@ -212,7 +220,7 @@ main {
       }
       .score {
         font-weight: bold;
-        font-size: 1.5rem;
+        font-size: 1.45rem;
       }
       .attendance {
         &::before {

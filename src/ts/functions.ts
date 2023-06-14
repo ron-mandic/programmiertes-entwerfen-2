@@ -2,7 +2,6 @@ import { TGoal, TMatch, TMatchLong, TScoreTypes } from './types.ts';
 import { Type } from './classes/Type.ts';
 import {
   CHART_WIDTH_MAX,
-  CHART_WIDTH_MIN,
   DATE_RANGE_IN_DAYS,
   ET1_LIMIT,
   ET2_LIMIT,
@@ -22,6 +21,7 @@ import {
 } from './interfaces.ts';
 import Chroma from 'chroma-js';
 import Moment from 'moment/moment';
+import Anime from 'animejs';
 
 /**
  * `funcSortAscTGoal` sorts an array of goals ascending by minute in alphabetical order
@@ -684,7 +684,11 @@ function funcMakeDraggable(element: HTMLElement, parent: HTMLElement) {
     element.onmousedown = dragMouseDown;
   }
 
-  function dragMouseDown(e) {
+  let boxShadow = 'box-shadow',
+    boxShadowValueOn = '4px 4px 10px 0 rgba(0, 0, 0, 0.375)',
+    boxShadowValueOff = 'none';
+
+  function dragMouseDown(e: any) {
     e = e || window.event;
     e.preventDefault();
     // get the mouse cursor position at startup:
@@ -692,6 +696,7 @@ function funcMakeDraggable(element: HTMLElement, parent: HTMLElement) {
     pos4 = e.clientY;
     document.onmouseup = closeDragElement;
     // call a function whenever the cursor moves:
+    // @ts-ignore
     document.onmousemove = elementDrag;
   }
 
@@ -727,6 +732,8 @@ function funcMakeDraggable(element: HTMLElement, parent: HTMLElement) {
     // element.style.left = element.offsetLeft - pos1 + 'px';
     // element.style.top = element.offsetTop - pos2 + 'px';
     $(element).css('cursor', 'grab');
+    if ($(element).css(boxShadow) !== boxShadowValueOn)
+      $(element).css(boxShadow, boxShadowValueOn);
   }
 
   function closeDragElement() {
@@ -734,13 +741,16 @@ function funcMakeDraggable(element: HTMLElement, parent: HTMLElement) {
     document.onmouseup = null;
     document.onmousemove = null;
     $(element).css('cursor', 'auto');
+    $(element).css(boxShadow, boxShadowValueOff);
   }
 }
 
 function funcPopulateModal(
+  // @ts-ignore
   chart: Chart,
   wmModal: JQuery,
   wmMatchDot: JQuery,
+  // @ts-ignore
   event: JQuery.ClickEvent<HTMLElement>
 ) {
   const wmModalContent = wmModal.find('.content')!;
@@ -769,6 +779,7 @@ function funcPopulateModal(
 
   let host = arrWMMatches[0][EMatchColumnsLong.HOST];
   if (host.startsWith('Korea Republic')) host = 'Korea, Japan';
+  else if (host.startsWith('United States')) host = 'USA';
 
   wmModalContent.empty();
   wmModalTitle.addClass('on');
@@ -909,6 +920,147 @@ function funcFormat(num: number, delimiter: string) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
 }
 
+/**
+ * @see https://www.w3schools.com/howto/howto_custom_select.asp
+ */
+function funcActivateSelect() {
+  let x, i, j, l, ll, selElmnt, a, b, c;
+
+  x = document.getElementsByClassName('custom-select');
+  l = x.length;
+  for (i = 0; i < l; i++) {
+    selElmnt = x[i].getElementsByTagName('select')[0];
+    ll = selElmnt.length;
+
+    a = document.createElement('DIV');
+    a.setAttribute('class', 'select-selected');
+    a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+    x[i].appendChild(a);
+
+    b = document.createElement('DIV');
+    b.setAttribute('class', 'select-items select-hide');
+    for (j = 1; j < ll; j++) {
+      c = document.createElement('DIV');
+      c.innerHTML = selElmnt.options[j].innerHTML;
+      c.addEventListener('click', function (e) {
+        let y, i, k, s, h, sl, yl;
+        s = this.parentNode.parentNode.getElementsByTagName('select')[0];
+        sl = s.length;
+        h = this.parentNode?.previousSibling;
+        for (i = 0; i < sl; i++) {
+          if (s.options[i].innerHTML == this.innerHTML) {
+            s.selectedIndex = i;
+            h.innerHTML = this.innerHTML;
+            y = this.parentNode?.getElementsByClassName('same-as-selected');
+            yl = y.length;
+            for (k = 0; k < yl; k++) {
+              y[k].removeAttribute('class');
+            }
+            this.setAttribute('class', 'same-as-selected');
+            break;
+          }
+        }
+
+        funcFilterWMMatchDots(e.target);
+
+        // @ts-ignore
+        h!.click();
+      });
+      b.appendChild(c);
+    }
+    x[i].appendChild(b);
+    a.addEventListener('click', function (e) {
+      /* When the select box is clicked, close any other select boxes,
+      and open/close the current select box: */
+      e.stopPropagation();
+      closeAllSelect(this);
+      // @ts-ignore
+      this.nextSibling!.classList.toggle('select-hide');
+      this.classList.toggle('select-arrow-active');
+    });
+  }
+
+  function closeAllSelect(elmnt) {
+    /* A function that will close all select boxes in the document,
+    except the current select box: */
+    var x,
+      y,
+      i,
+      xl,
+      yl,
+      arrNo = [];
+    x = document.getElementsByClassName('select-items');
+    y = document.getElementsByClassName('select-selected');
+    xl = x.length;
+    yl = y.length;
+    for (i = 0; i < yl; i++) {
+      if (elmnt == y[i]) {
+        arrNo.push(i);
+      } else {
+        y[i].classList.remove('select-arrow-active');
+      }
+    }
+    for (i = 0; i < xl; i++) {
+      if (arrNo.indexOf(i)) {
+        x[i].classList.add('select-hide');
+      }
+    }
+  }
+
+  document.addEventListener('click', closeAllSelect);
+}
+
+function funcFilterWMMatchDots(eventTarget: EventTarget | null) {
+  if (eventTarget === null) return;
+  const _eventTarget = $(eventTarget);
+  const innerText = _eventTarget.text();
+
+  const regExp = /([a-zA-Z]+):\s([\w\s\-,]+)/g;
+
+  let value = innerText.replace(regExp, '$2').trim();
+  let prop = innerText.replace(regExp, '$1').trim().toLowerCase();
+
+  const allWMMatchDots = $('.wm_match');
+
+  if (value === 'All') {
+    Chart.filterStates[prop] = '';
+  } else {
+    Chart.filterStates[prop] = value;
+  }
+
+  let searchAttributes = '';
+  if (
+    Chart.filterStates.round === '' &&
+    Chart.filterStates.host === '' &&
+    Chart.filterStates.weekday === ''
+  ) {
+    allWMMatchDots.removeClass('filtered');
+  } else {
+    if (Chart.filterStates.round) {
+      // *= means contains
+      // ^= means starts with
+      // $= means ends with
+      // ~= means contains word
+      // |= means contains prefix or ends with prefix followed by -
+      searchAttributes += `[data-rounds*="${Chart.filterStates.round}"]`; // Because of data-rounds="Third-place match,Final"
+    }
+    if (Chart.filterStates.host) {
+      searchAttributes += `[data-host="${Chart.filterStates.host}"]`;
+    }
+    if (Chart.filterStates.weekday) {
+      searchAttributes += `[data-weekday="${Chart.filterStates.weekday}"]`;
+    }
+
+    let searchString = `.wm_match${searchAttributes}`;
+    // console.log(searchString);
+
+    allWMMatchDots.addClass('filtered');
+    $(searchString).removeClass('filtered');
+  }
+
+  // console.log(Chart.filterStates);
+}
+
 export {
   funcSortTGoalAsc,
   funcFilterScoreOfRE1,
@@ -939,4 +1091,6 @@ export {
   funcEvaluateScore,
   funcFormat,
   funcIsAnyOfThoseClasses,
+  funcActivateSelect,
+  funcFilterWMMatchDots,
 };
