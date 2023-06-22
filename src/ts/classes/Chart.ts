@@ -22,6 +22,7 @@ import {
   DATE_RANGE_IN_DAYS,
   NA,
   TOURNAMENT_START_LONG,
+  WMMatchDotColors,
 } from '../constants.ts';
 import {
   funcActivateSelect,
@@ -282,7 +283,9 @@ export class Chart {
       funcPopulateModal(chart, wmModal, wmMatchDot, event);
 
       wmMatchDot.focus();
+      chart?.currentlySelectedMatch?.removeClass('selected');
       chart.currentlySelectedMatch = wmMatchDot;
+      chart.currentlySelectedMatch!.addClass('selected');
       // console.log(chart.currentlySelectedMatch);
     });
 
@@ -293,7 +296,8 @@ export class Chart {
     $(document).on('keydown', function (event) {
       let app = $('#app'),
         container = $('.container'),
-        aside = $('aside');
+        aside = $('aside'),
+        wmModal = $('.wm_modal');
 
       if (event.key === 'd') {
         if (Chart.CHART_WIDTH === CHART_WIDTH_MAX) {
@@ -303,6 +307,7 @@ export class Chart {
           app.css('width', Chart.CHART_WIDTH).addClass('min');
           container.css('width', Chart.CHART_WIDTH).addClass('min');
           aside.show();
+          wmModal.css('right', 'calc(480px + 1.5rem)');
         } else {
           // If the chart is in the middle of the screen
           Chart.CHART_WIDTH = CHART_WIDTH_MAX;
@@ -310,7 +315,11 @@ export class Chart {
           app.css('width', Chart.CHART_WIDTH).removeClass('min');
           container.css('width', Chart.CHART_WIDTH).removeClass('min');
           aside.hide();
+          wmModal.css('right', '1.5rem');
         }
+
+        chart.currentlySelectedMatch?.removeClass('selected');
+        chart.currentlySelectedMatch = null;
 
         if (chart.currentYear !== 1930) {
           // Only visual indicator
@@ -334,13 +343,10 @@ export class Chart {
           $('.asides').css('translate', `-${((index - 1) / 22) * 100}%`);
         }
 
-        if (chart.currentlySelectedMatch) {
-          chart.currentlySelectedMatch.focus();
-        }
-
         if (!chart.objAsideState.previous) {
           $(`.wm[data-year='${chart.currentYear}']`).addClass('on');
         }
+        return;
       }
     });
   }
@@ -380,9 +386,10 @@ export class Chart {
         // @ts-ignore
         !e.target.classList.contains('wm_match')
       ) {
+        /* chart.currentlySelectedMatch?.removeClass('selected');
         chart.currentlySelectedMatch = null;
         wmModalTitle.removeClass('on');
-        wmModalContent.empty();
+        wmModalContent.empty(); */
       }
     });
 
@@ -407,7 +414,7 @@ export class Chart {
   async loadJSON() {
     for (let i = 0; i < this.arrYears.length; i++) {
       try {
-        const response = await Http.get(`/json/${this.arrYears[i]}.json`);
+        const response = await Http.get(`./json/${this.arrYears[i]}.json`);
         if (response.status === 200) {
           this.objData[this.arrYears[i]] = response.data;
         }
@@ -512,7 +519,7 @@ export class Chart {
 
       for (let i = 0; i < DATE_RANGE_IN_DAYS; i++) {
         if (!dictWMMatchDots[i]) {
-          wmHTML.append(
+          /* wmHTML.append(
             Chart.createDot(
               {
                 left: `${(i / DATE_RANGE_IN_DAYS) * 100}%`,
@@ -520,7 +527,7 @@ export class Chart {
               },
               '<div class="wm_match__empty"></div>'
             )
-          );
+          ); */
           continue;
         }
 
@@ -563,6 +570,11 @@ export class Chart {
 
           matchHTML.data('data-matches', dictWMMatchDots[i].matches);
           matchHTML.data('data-ids', dictWMMatchDots[i].ids);
+
+          matchHTML.css(
+            'background-color',
+            WMMatchDotColors[dictWMMatchDots[i].matches.length - 1]
+          );
 
           wmHTML.append(matchHTML);
         }

@@ -21,7 +21,6 @@ import {
 } from './interfaces.ts';
 import Chroma from 'chroma-js';
 import Moment from 'moment/moment';
-import Anime from 'animejs';
 
 /**
  * `funcSortAscTGoal` sorts an array of goals ascending by minute in alphabetical order
@@ -625,8 +624,6 @@ function funcSimulateMouseClick(chart: Chart, year: number) {
     }
     chart.setYear(year);
     chart.setWM(chart.objData[+year]);
-
-    // console.log('Helllllllllooooooo', `currentYear = ${chart.currentYear}`);
     return;
   }
 
@@ -715,22 +712,8 @@ function funcMakeDraggable(element: HTMLElement, parent: HTMLElement) {
     pos4 = e.clientY;
     // set the element's new position:
 
-    let absTop = element.offsetTop - pos2;
-    let absLeft = element.offsetLeft - pos1;
-
-    if (absLeft >= 0 && absLeft <= widthMax - widthElement) {
-      element.style.left = absLeft + 'px';
-    }
-    // Upon switching to the narrower chart width
-    /* if (Chart.CHART_WIDTH === CHART_WIDTH_MIN && absLeft > CHART_WIDTH_MAX) {
-      element.style.left = CHART_WIDTH_MIN - widthElement + 'px';
-    } */
-    if (absTop >= 0 && absTop <= heightMax - heightElement) {
-      element.style.top = absTop + 'px';
-    }
-
-    // element.style.left = element.offsetLeft - pos1 + 'px';
-    // element.style.top = element.offsetTop - pos2 + 'px';
+    element.style.left = element.offsetLeft - pos1 + 'px';
+    element.style.top = element.offsetTop - pos2 + 'px';
     $(element).css('cursor', 'grab');
     if ($(element).css(boxShadow) !== boxShadowValueOn)
       $(element).css(boxShadow, boxShadowValueOn);
@@ -944,13 +927,16 @@ function funcActivateSelect() {
       c.innerHTML = selElmnt.options[j].innerHTML;
       c.addEventListener('click', function (e) {
         let y, i, k, s, h, sl, yl;
+        // @ts-ignore
         s = this.parentNode.parentNode.getElementsByTagName('select')[0];
         sl = s.length;
         h = this.parentNode?.previousSibling;
         for (i = 0; i < sl; i++) {
           if (s.options[i].innerHTML == this.innerHTML) {
             s.selectedIndex = i;
+            // @ts-ignore
             h.innerHTML = this.innerHTML;
+            // @ts-ignore
             y = this.parentNode?.getElementsByClassName('same-as-selected');
             yl = y.length;
             for (k = 0; k < yl; k++) {
@@ -980,7 +966,7 @@ function funcActivateSelect() {
     });
   }
 
-  function closeAllSelect(elmnt) {
+  function closeAllSelect(elmnt: any) {
     /* A function that will close all select boxes in the document,
     except the current select box: */
     var x,

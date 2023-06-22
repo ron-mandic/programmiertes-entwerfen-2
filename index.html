@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="src/index.scss" lang="scss" />
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./src/index.scss" lang="scss" />
     <title>Document</title>
   </head>
   <body class="is-flex c-c no-scroll-x no-scroll-y">
@@ -14,6 +14,15 @@
       data-title-before="FIFA World Cup &#183; 1930-2022"
       data-title-after="1930"
     >
+      <div class="container-modal">
+        <div class="wm_modal is-masked">
+          <h2 class="wm_modal_title" data-date="N/A" data-matches="N/A">
+            Matches
+          </h2>
+          <div class="content"></div>
+        </div>
+      </div>
+
       <div class="container scroll-x no-scroll-y is-parent">
         <div id="app" class="no-scroll-y">
           <div class="months is-flex se-c" data-view="view:year">
@@ -247,12 +256,6 @@
               <div class="month_divider"></div>
               <div class="month_divider"></div>
             </div>
-          </div>
-          <div class="wm_modal is-masked">
-            <h2 class="wm_modal_title" data-date="N/A" data-matches="N/A">
-              Matches
-            </h2>
-            <div class="content"></div>
           </div>
         </div>
       </div>
@@ -1045,8 +1048,12 @@
           </label>
         </div>
       </div>
+
+      <div class="custom-legend">
+        <span>D</span>
+      </div>
     </main>
 
-    <script type="module" src="/src/index.ts"></script>
+    <script type="module" src="./src/index.ts"></script>
   </body>
 </html>

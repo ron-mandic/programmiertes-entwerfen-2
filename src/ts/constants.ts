@@ -131,6 +131,29 @@ const CHART_WIDTH_MIN = 1440,
 const CHART_WIDTH_OFFSET_MIN = 360,
   CHART_WIDTH_OFFSET_MAX = 480;
 
+// see https://coolors.co/palette/03071e-370617-6a040f-9d0208-d00000-dc2f02-e85d04-f48c06-faa307-ffba08
+const WMMatchDotColors = [
+  '#FAA307',
+  '#F48C06',
+  '#E85D04',
+  '#DC2F02',
+  '#D00000',
+  '#9D0208',
+  '#6A040F',
+  '#370617',
+];
+
+const WMMatchDotColorsLight = [
+  '#fef5e6',
+  '#fdf3e6',
+  '#fceee5',
+  '#fbeae5',
+  '#fae5e5',
+  '#f5e5e6',
+  '#f0e5e7',
+  '#ebe6e7',
+];
+
 export {
   NA,
   OG,
@@ -160,4 +183,6 @@ export {
   CHART_WIDTH_MAX,
   CHART_WIDTH_OFFSET_MIN,
   CHART_WIDTH_OFFSET_MAX,
+  WMMatchDotColors,
+  WMMatchDotColorsLight,
 };

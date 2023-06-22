@@ -204,26 +204,35 @@ aside {
     }
 
     &:has(span.invalid) {
-      cursor: not-allowed;
     }
     &:has(span.valid.et),
     &:has(span.valid.p) {
       background-color: #f5f5f5 !important;
     }
 
+    &:hover {
+      cursor: pointer;
+    }
+    &:hover span,
+    &:hover span.invalid,
+    &:hover span.invalid.et,
+    &:hover span.invalid.p {
+      opacity: 1;
+      transition: opacity 0.25s ease-in-out;
+    }
+
     span {
       display: block;
-      font-size: 1.25rem;
+      font-size: 1rem;
       font-weight: 400;
+      opacity: 0;
+      transition: opacity 0.75s ease-in-out;
 
-      &.invalid {
-        font-size: 0.9rem;
-        opacity: 0.25;
-      }
-
+      &.et,
+      &.p,
       &.invalid.et,
       &.invalid.p {
-        opacity: 0.25;
+        opacity: 1;
         font-weight: 400;
       }
 
@@ -238,7 +247,7 @@ aside {
 
       &.valid.et,
       &.valid.p {
-        font-size: 1.25rem;
+        // font-size: 1.25rem;
         font-weight: 400;
       }
     }
@@ -257,7 +266,7 @@ footer {
   font-family: "Montserrat", sans-serif;
   font-weight: bold;
 
-  backdrop-filter: blur(0.5rem);
+  backdrop-filter: blur(1.5rem);
 
   .years {
     height: 100%;
