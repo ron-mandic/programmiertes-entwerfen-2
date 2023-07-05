@@ -103,11 +103,9 @@ main {
 }
 
 .wm_modal {
-  position: fixed;
-  top: calc(
-    (#{v.$app-height} - 810px) / 2
-  ); // no translate allowed to not mess up the drag event
-  right: 1.5rem;
+  position: absolute;
+  top: 5.5rem;
+  right: 2.75rem;
   width: v.$aside-width;
   height: 810px;
   pointer-events: all;
@@ -118,7 +116,7 @@ main {
 
   transition: box-shadow 0.5s ease-in;
 
-  z-index: 1000;
+  z-index: 9999 !important;
 
   // when dragged
   &:active {
@@ -253,7 +251,7 @@ main {
   position: absolute;
   top: calc(100% + 0.875rem);
   right: 0;
-  z-index: 1000;
+  z-index: 1;
   width: 37px;
   height: 37px;
   background-color: #fff;

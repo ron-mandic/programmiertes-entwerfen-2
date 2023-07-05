@@ -133,25 +133,25 @@ const CHART_WIDTH_OFFSET_MIN = 360,
 
 // see https://coolors.co/palette/03071e-370617-6a040f-9d0208-d00000-dc2f02-e85d04-f48c06-faa307-ffba08
 const WMMatchDotColors = [
-  '#FAA307',
-  '#F48C06',
-  '#E85D04',
-  '#DC2F02',
-  '#D00000',
-  '#9D0208',
-  '#6A040F',
-  '#370617',
+  "#ffcf40",
+  "#ff8800",
+  "#eb430c",
+  "#a7000e",
+  "#77002b",
+  "#66003d",
+  "#470033",
+  "#1a0015"
 ];
 
 const WMMatchDotColorsLight = [
-  '#fef5e6',
-  '#fdf3e6',
-  '#fceee5',
-  '#fbeae5',
-  '#fae5e5',
-  '#f5e5e6',
-  '#f0e5e7',
-  '#ebe6e7',
+  "#fffaeb",
+  "#fff3e5",
+  "#fdece6",
+  "#f6e5e6",
+  "#f1e5e9",
+  "#efe5eb",
+  "#ece5ea",
+  "#e8e5e7"
 ];
 
 export {

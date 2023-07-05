@@ -668,6 +668,7 @@ function funcGetYearFrom(index: number) {
   return WorldCupYearsIndices[index as keyof typeof WorldCupYearsIndices];
 }
 
+// @ts-ignore
 function funcMakeDraggable(element: HTMLElement, parent: HTMLElement) {
   let pos1 = 0,
     pos2 = 0,
@@ -698,11 +699,6 @@ function funcMakeDraggable(element: HTMLElement, parent: HTMLElement) {
   }
 
   function elementDrag(e: DragEvent) {
-    const { width: widthMax, height: heightMax } =
-      parent.getBoundingClientRect();
-    const { width: widthElement, height: heightElement } =
-      element.getBoundingClientRect();
-
     e = e || window.event;
     e.preventDefault();
     // calculate the new cursor position:

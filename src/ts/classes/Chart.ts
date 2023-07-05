@@ -66,7 +66,6 @@ export class Chart {
   // ################################################################################
   // Static properties ##############################################################
   // ################################################################################
-  public static IS_EXPANDED = false;
   public static CHART_WIDTH = CHART_WIDTH_MAX;
   // public static CHART_HEIGHT = 1080;
   public static CHART_WIDTH_OFFSET = CHART_WIDTH_OFFSET_MAX;
@@ -375,9 +374,6 @@ export class Chart {
       });
     });
 
-    let wmModal = $('.wm_modal');
-    const wmModalContent = wmModal.find('.content')!;
-    const wmModalTitle = wmModal.find('h2')!;
     // If I click outside the modal, the content should reset itself
     window.addEventListener('click', function (e) {
       if (
@@ -504,6 +500,7 @@ export class Chart {
           date = match[EMatchColumns.DATE]!,
           daysDiff = Moment(date).diff(dateStartLong, EUnitOfTime.DAYS);
 
+
         if (!dictWMMatchDots[daysDiff]) {
           dictWMMatchDots[daysDiff] = {
             matches: [match],
@@ -541,7 +538,7 @@ export class Chart {
             '<div class="wm_match" tabindex="0"></div>'
           );
 
-          if (dictWMMatchDots[i].occurrences > 1) {
+          if (dictWMMatchDots[i].occurrences >= 1) {
             matchHTML.attr('data-occurrences', dictWMMatchDots[i].occurrences);
           }
 
@@ -608,7 +605,7 @@ export class Chart {
       const [wrapperA, wrapperB] = asideHTML.find('.wrapper-m');
       const colorStart = '#e2fdff', // #d9ed92, #e0aaff, #c7f9cc, #e2fdff
         colorEnd = '#5465ff'; // #d9ed92, #10002b, #22577a, #5465ff
-      const funcGetColor = funcGetFuncFromGradient(colorStart, colorEnd, 0, 1);
+      const funcGetColor = funcGetFuncFromGradient(colorStart, colorEnd, 0, .5);
 
       if (!wrapperA || !wrapperB)
         throw new Error('composeGrids: wrapperA or wrapperB is null');
